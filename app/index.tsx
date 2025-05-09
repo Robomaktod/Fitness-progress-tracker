@@ -1,9 +1,9 @@
-import { Text, View } from "react-native";
+import { View, Text } from 'react-native'
+import React from 'react'
+import { Redirect } from 'expo-router'
 
-export default function Index() {
-  return (
-    <View className="bg-dark-100 h-full">
-      <Text></Text>
-    </View>
-  );
+const Home = () => {
+  return <Redirect href={'/(auth)/welcome'}/>
 }
+
+export default Home
