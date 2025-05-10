@@ -30,3 +30,24 @@ export const menuItems = [
     icon: "person-circle-outline" as const 
   },
 ];
+
+export const onboarding = [
+  {
+    id: 1,
+    title: "Track Your Health Journey",
+    description:
+      "Monitor your daily activities, nutrition, and progress with our advanced tracking system",
+  },
+  {
+    id: 2,
+    title: "Set Your Goals",
+    description:
+      "Customize your fitness targets and let us help you achieve your personal health objectives",
+  },
+  {
+    id: 3,
+    title: "You're All Set!",
+    description:
+      "Your personalized health journey begins now. Let's start tracking your progress!",
+  },
+];

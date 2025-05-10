@@ -1,20 +1,60 @@
-import { View, Text, Touchable, Pressable } from 'react-native'
-import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { router } from 'expo-router'
+import { View, Text, Pressable, StatusBar, Button } from "react-native";
+import React, { useRef, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import Swiper from "react-native-swiper";
+import { onboarding } from "@/constants";
+import CustomButton from "@/components/CustomButton";
 
 const Welcome = () => {
-  return (
-    <SafeAreaView className='flex-1 bg-[#020611] items-center'>
-      <Text>Welcome</Text>
-      <Pressable
-        className=''
-        onPress={()=>router.replace("/(auth)/register")}
-      >
-        <Text className='text-white'>Skip</Text>
-      </Pressable>
-    </SafeAreaView>
-  )
-}
+  const swiperRef = useRef<Swiper>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const isLastSlide = activeIndex == onboarding.length - 1;
 
-export default Welcome
+  return (
+    <SafeAreaView className="flex-1 bg-[#020611] items-center">
+      <StatusBar backgroundColor="#020611" />
+
+      <View className="w-full flex justify-between flex-row px-4">
+        <Text className="text-[#1ED2EE] text-2xl font-bold">
+          Step {activeIndex + 1} of 3
+        </Text>
+        <Pressable
+          className="flex justify-end items-end"
+          onPress={() => router.replace("/(auth)/register")}
+        >
+          <Text className="text-[#9BA2AE]">Skip</Text>
+        </Pressable>
+      </View>
+
+      <Swiper
+        ref={swiperRef}
+        loop={false}
+        dot={<View className="bg-slate-800 w-12 h-1 mx-4 rounded-full"/>}
+        activeDot={<View className="bg-[#1ED2EE] w-12 h-1 mx-4 rounded-full" />}
+        onIndexChanged={(index) => {
+          setActiveIndex(index);
+        }}
+      >
+        {onboarding.map((item) => (
+          <View key={item.id} className="flex-1">
+            <Text className="text-white">{item.title}</Text>
+
+            <Text className="text-white">{item.description}</Text>
+          </View>
+        ))}
+      </Swiper>
+
+      <CustomButton
+        title={isLastSlide ? "Get Started" : "Next"}
+        onPress={() => {
+          isLastSlide
+            ? router.replace("/(auth)/register")
+            : swiperRef.current?.scrollBy(1);
+        }}
+      />
+    </SafeAreaView>
+  );
+};
+
+export default Welcome;
