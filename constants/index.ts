@@ -1,3 +1,9 @@
+import mainIcon from "../assets/images/react-logo.png";
+
+export const images = {
+  mainIcon,
+};
+
 export const menuItems = [
   {
     name: "Dashboard",
@@ -9,25 +15,25 @@ export const menuItems = [
     path: "/nutrition",
     icon: "restaurant-outline" as const,
   },
-  { 
+  {
     name: "Activity",
     path: "/activity",
-    icon: "barbell-outline" as const 
+    icon: "barbell-outline" as const,
   },
-  { 
+  {
     name: "Progress",
     path: "/progress",
-    icon: "trending-up-outline" as const 
+    icon: "trending-up-outline" as const,
   },
-  { 
+  {
     name: "Social",
     path: "/social",
-    icon: "people-outline" as const 
+    icon: "people-outline" as const,
   },
   {
     name: "Profile",
     path: "/profile",
-    icon: "person-circle-outline" as const 
+    icon: "person-circle-outline" as const,
   },
 ];
 
@@ -51,3 +57,11 @@ export const onboarding = [
       "Your personalized health journey begins now. Let's start tracking your progress!",
   },
 ];
+
+export const gradients = {
+  default: ["#1ED2EE", "#7B39ED"],
+  oceanBlue: ["#2193b0", "#6dd5ed", "#2E8BC0"],
+  pastelDream: ["#A1C4FD", "#C2E9FB", "#FFDBE4"],
+  neonParty: ["#ff00cc", "#3333ff", "#00ffcc"],
+} as const;
+export type GradientName = keyof typeof gradients;

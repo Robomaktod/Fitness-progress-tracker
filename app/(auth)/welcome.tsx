@@ -1,19 +1,20 @@
-import { View, Text, Pressable, StatusBar, Button } from "react-native";
-import React, { useRef, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import React, { useRef, useState } from "react";
+import { View, Text, Pressable, StatusBar } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Swiper from "react-native-swiper";
-import { onboarding } from "@/constants";
+
 import CustomButton from "@/components/CustomButton";
+import { onboarding } from "@/constants";
 
 const Welcome = () => {
   const swiperRef = useRef<Swiper>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const isLastSlide = activeIndex == onboarding.length - 1;
+  const isLastSlide = activeIndex === onboarding.length - 1;
 
   return (
     <SafeAreaView className="flex-1 bg-[#020611] items-center">
-      <StatusBar backgroundColor="#020611" />
+      <StatusBar backgroundColor="#020611" barStyle="light-content" />
 
       <View className="w-full flex justify-between flex-row px-4">
         <Text className="text-[#1ED2EE] text-2xl font-bold">
@@ -30,7 +31,7 @@ const Welcome = () => {
       <Swiper
         ref={swiperRef}
         loop={false}
-        dot={<View className="bg-slate-800 w-12 h-1 mx-4 rounded-full"/>}
+        dot={<View className="bg-slate-800 w-12 h-1 mx-4 rounded-full" />}
         activeDot={<View className="bg-[#1ED2EE] w-12 h-1 mx-4 rounded-full" />}
         onIndexChanged={(index) => {
           setActiveIndex(index);
@@ -45,14 +46,18 @@ const Welcome = () => {
         ))}
       </Swiper>
 
-      <CustomButton
-        title={isLastSlide ? "Get Started" : "Next"}
-        onPress={() => {
-          isLastSlide
-            ? router.replace("/(auth)/register")
-            : swiperRef.current?.scrollBy(1);
-        }}
-      />
+      <View className="w-full px-10 mb-4">
+        <CustomButton
+          title={isLastSlide ? "Get Started" : "Next"}
+          className="mx-12r"
+          onPress={() => {
+            // eslint-disable-next-line no-unused-expressions
+            isLastSlide
+              ? router.replace("/(auth)/register")
+              : swiperRef.current?.scrollBy(1);
+          }}
+        />
+      </View>
     </SafeAreaView>
   );
 };

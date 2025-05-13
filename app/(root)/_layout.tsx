@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { Slot, useRouter, usePathname, Stack } from "expo-router";
+import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+
 import WheelMenu from "@/components/WheelMenu";
-
-
 
 const Layout = () => {
   return (

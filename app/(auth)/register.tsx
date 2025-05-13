@@ -1,12 +1,80 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { LinearGradient } from "expo-linear-gradient";
+import { Link } from "expo-router";
+import React, { useState } from "react";
+import { View, Text, Image, ScrollView, StatusBar } from "react-native";
+
+import CustomButton from "@/components/CustomButton";
+import Divider from "@/components/Divider";
+import GradientText from "@/components/GradientText";
+import InputField from "@/components/InputField";
+import { images } from "@/constants";
 
 const Register = () => {
   return (
-    <View>
-      <Text>Register</Text>
-    </View>
-  )
-}
+    <LinearGradient
+      className="flex-1 transition-all duration-300 "
+      colors={["#111827", "#3b0764", "#172554"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      <StatusBar backgroundColor={"#020611"} barStyle={"light-content"} />
+      <ScrollView className="flex-1">
+        <View className="items-center my-8">
+          <Image source={images.mainIcon} className="size-20 mb-2" />
+          <GradientText>FitnessTracker</GradientText>
+        </View>
 
-export default Register
+        <View className="bg-black/30 mx-8 flex-1 rounded-xl p-10 backdrop-blur-sm border border-purple-500/20">
+          <Text className="text-2xl my-4 self-center text-white">
+            Create Account
+          </Text>
+          <InputField labelStyle="text-white" label="Email" />
+
+          <InputField
+            labelStyle="text-white"
+            label="Password"
+            secureTextEntry
+          />
+
+          <InputField
+            containerStyle="mb-10"
+            labelStyle="text-white "
+            label="Confirm Password"
+            secureTextEntry
+          />
+
+          <CustomButton
+            className="mb-6"
+            title={"Sign Up"}
+            onPress={handleSignUp}
+          />
+
+          <View className="flex flex-row self-center mb-6">
+            <Text className="text-[#D0D4DA]">Already have an account? </Text>
+            <Link
+              href="/login"
+              className="text-lg text-center text-general-200"
+            >
+              <GradientText bgVariant="default">Login</GradientText>
+            </Link>
+          </View>
+
+          <View className="flex flex-row self-center mb-4">
+            <Divider />
+            <Text className="text-[#D0D4DA]">or</Text>
+            <Divider />
+          </View>
+
+          <CustomButton
+            className="w-full bg-transparent border border-purple-500/50 hover:border-purple-500 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2"
+            title="Sign up with Google"
+            onPress={handleGoogleSignUp}
+            isGradientActive={false}
+          />
+        </View>
+      </ScrollView>
+    </LinearGradient>
+  );
+};
+
+export default Register;
