@@ -22,7 +22,7 @@ const Welcome = () => {
         </Text>
         <Pressable
           className="flex justify-end items-end"
-          onPress={() => router.replace("/(auth)/register")}
+          onPress={() => router.replace("/(auth)/sign-up")}
         >
           <Text className="text-[#9BA2AE]">Skip</Text>
         </Pressable>
@@ -53,7 +53,7 @@ const Welcome = () => {
           onPress={() => {
             // eslint-disable-next-line no-unused-expressions
             isLastSlide
-              ? router.replace("/(auth)/register")
+              ? router.replace("/(auth)/sign-up")
               : swiperRef.current?.scrollBy(1);
           }}
         />

@@ -1,7 +1,12 @@
-import mainIcon from "../assets/images/react-logo.png";
+import google from "@/assets/icons/google.png";
+import mainIcon from "@/assets/images/react-logo.png";
 
 export const images = {
   mainIcon,
+};
+
+export const icons = {
+  google,
 };
 
 export const menuItems = [

@@ -7,9 +7,19 @@ import CustomButton from "@/components/CustomButton";
 import Divider from "@/components/Divider";
 import GradientText from "@/components/GradientText";
 import InputField from "@/components/InputField";
+import OAuth from "@/components/OAuth";
 import { images } from "@/constants";
 
-const Register = () => {
+const SignUp = () => {
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const OnSignUpPress = async () => {
+    // Handle sign-in logic here
+  };
+
   return (
     <LinearGradient
       className="flex-1 transition-all duration-300 "
@@ -28,11 +38,18 @@ const Register = () => {
           <Text className="text-2xl my-4 self-center text-white">
             Create Account
           </Text>
-          <InputField labelStyle="text-white" label="Email" />
+          <InputField
+            labelStyle="text-white"
+            label="Email"
+            value={form.password}
+            onChangeText={(text) => setForm({ ...form, email: text })}
+          />
 
           <InputField
             labelStyle="text-white"
             label="Password"
+            value={form.password}
+            onChangeText={(text) => setForm({ ...form, password: text })}
             secureTextEntry
           />
 
@@ -46,13 +63,13 @@ const Register = () => {
           <CustomButton
             className="mb-6"
             title={"Sign Up"}
-            onPress={handleSignUp}
+            // onPress={handleSignUp}
           />
 
           <View className="flex flex-row self-center mb-6">
             <Text className="text-[#D0D4DA]">Already have an account? </Text>
             <Link
-              href="/login"
+              href="/sign-in"
               className="text-lg text-center text-general-200"
             >
               <GradientText bgVariant="default">Login</GradientText>
@@ -64,17 +81,11 @@ const Register = () => {
             <Text className="text-[#D0D4DA]">or</Text>
             <Divider />
           </View>
-
-          <CustomButton
-            className="w-full bg-transparent border border-purple-500/50 hover:border-purple-500 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2"
-            title="Sign up with Google"
-            onPress={handleGoogleSignUp}
-            isGradientActive={false}
-          />
+          <OAuth />
         </View>
       </ScrollView>
     </LinearGradient>
   );
 };
 
-export default Register;
+export default SignUp;

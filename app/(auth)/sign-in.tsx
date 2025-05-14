@@ -7,9 +7,14 @@ import CustomButton from "@/components/CustomButton";
 import Divider from "@/components/Divider";
 import GradientText from "@/components/GradientText";
 import InputField from "@/components/InputField";
+import OAuth from "@/components/OAuth";
 import { images } from "@/constants";
 
-const Login = () => {
+const SignIn = () => {
+  const OnSignInPress = async () => {
+    // Handle sign-in logic here
+  };
+
   return (
     <LinearGradient
       className="flex-1 transition-all duration-300 "
@@ -26,7 +31,7 @@ const Login = () => {
 
         <View className="bg-black/30 mx-8 flex-1 rounded-xl p-10 backdrop-blur-sm border border-purple-500/20">
           <Text className="text-2xl my-4 self-center text-white">
-            Welcome Back
+            Welcome Back 👋
           </Text>
           <InputField labelStyle="text-white" label="Email" />
 
@@ -42,7 +47,7 @@ const Login = () => {
           <View className="flex flex-row self-center mb-6">
             <Text className="text-[#D0D4DA]">Don't have an account? </Text>
             <Link
-              href="/register"
+              href="/sign-up"
               className="text-lg text-center text-general-200"
             >
               <GradientText bgVariant="default">Sign Up</GradientText>
@@ -55,15 +60,11 @@ const Login = () => {
             <Divider />
           </View>
 
-          <CustomButton
-            className="w-full bg-transparent border border-purple-500/50 hover:border-purple-500 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2"
-            title="Sign up with Google"
-            isGradientActive={false}
-          />
+          <OAuth />
         </View>
       </ScrollView>
     </LinearGradient>
   );
 };
 
-export default Login;
+export default SignIn;
