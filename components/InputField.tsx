@@ -28,17 +28,15 @@ const InputField = ({
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View className="my-2 w-full">
-          <Text className={`text-lg font-JakartaSemiBold mb-3 ${labelStyle}`}>
-            {label}
-          </Text>
+          <Text className={`mb-3 text-lg ${labelStyle}`}>{label}</Text>
           <View
-            className={`flex flex-row justify-start items-center relative bg-gray-900/60 rounded-lg  border-purple-500/50 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 transition-all duration-300 ${containerStyle}`}
+            className={`relative flex flex-row items-center justify-start rounded-lg border-purple-500/50 bg-gray-900/60 transition-all duration-300 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 ${containerStyle}`}
           >
             {icon && (
-              <Image source={icon} className={`w-6 h-6 ml-4 ${iconStyle}`} />
+              <Image source={icon} className={`ml-4 h-6 w-6 ${iconStyle}`} />
             )}
             <TextInput
-              className={`text-white rounded-lg p-4 font-JakartaSemiBold text-[15px] flex-1 ${inputStyle} text-left`}
+              className={`flex-1 rounded-lg p-4 text-[15px] text-white ${inputStyle} text-left`}
               secureTextEntry={secureTextEntry}
               {...props}
             />
@@ -49,4 +47,4 @@ const InputField = ({
   );
 };
 
-export default InputField
+export default InputField;

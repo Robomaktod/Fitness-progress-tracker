@@ -6,7 +6,7 @@ const Layout = () => {
   return (
     <Stack>
       <StatusBar hidden={true} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
       <Stack.Screen name="dashboard" options={{ headerShown: false }} />
       <Stack.Screen name="profile" options={{ headerShown: false }} />
       <Stack.Screen name="activity" options={{ headerShown: false }} />

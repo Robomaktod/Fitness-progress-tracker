@@ -1,4 +1,6 @@
+import error from "@/assets/icons/error.png";
 import google from "@/assets/icons/google.png";
+import success from "@/assets/icons/success.png";
 import mainIcon from "@/assets/images/react-logo.png";
 
 export const images = {
@@ -7,6 +9,8 @@ export const images = {
 
 export const icons = {
   google,
+  success,
+  error,
 };
 
 export const menuItems = [

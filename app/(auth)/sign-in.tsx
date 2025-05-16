@@ -11,6 +11,11 @@ import OAuth from "@/components/OAuth";
 import { images } from "@/constants";
 
 const SignIn = () => {
+  const [form, setForm] = React.useState({
+    email: "",
+    password: "",
+  });
+
   const OnSignInPress = async () => {
     // Handle sign-in logic here
   };
@@ -26,23 +31,29 @@ const SignIn = () => {
       <ScrollView className="flex-1">
         <View className="items-center my-8">
           <Image source={images.mainIcon} className="size-20 mb-2" />
-          <GradientText>FitnessTracker</GradientText>
+          <GradientText>NeonPulse Fit</GradientText>
         </View>
 
         <View className="bg-black/30 mx-8 flex-1 rounded-xl p-10 backdrop-blur-sm border border-purple-500/20">
           <Text className="text-2xl my-4 self-center text-white">
             Welcome Back 👋
           </Text>
-          <InputField labelStyle="text-white" label="Email" />
+          <InputField
+            labelStyle="text-white"
+            label="Email"
+            value={form.password}
+            onChangeText={(text) => setForm({ ...form, email: text })}
+          />
 
           <InputField
-            containerStyle="mb-10"
-            labelStyle="text-white "
+            labelStyle="text-white"
             label="Password"
+            value={form.password}
+            onChangeText={(text) => setForm({ ...form, password: text })}
             secureTextEntry
           />
 
-          <CustomButton className="mb-6" title={"Log In"} />
+          <CustomButton className="mt-10 mb-6" title={"Log In"} />
 
           <View className="flex flex-row self-center mb-6">
             <Text className="text-[#D0D4DA]">Don't have an account? </Text>

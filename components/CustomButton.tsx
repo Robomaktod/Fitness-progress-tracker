@@ -44,12 +44,12 @@ const CustomButton = ({
   return (
     <Pressable
       onPress={onPress}
-      className={`w-full flex justify-center items-center rounded-xl transition-all duration-300 hover:scale-[0.98] active:scale-[0.95] overflow-hidden ${className}`}
+      className={`flex w-full items-center justify-center overflow-hidden rounded-xl transition-all duration-300 ${className}`}
       {...props}
     >
       {isGradientActive ? (
         <LinearGradient
-          className={`w-full py-3 px-4 flex justify-center items-center ${gradientStyles}`}
+          className={`flex w-full items-center justify-center px-4 py-3 ${gradientStyles}`}
           colors={gradients[bgVariant]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}

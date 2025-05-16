@@ -13,15 +13,15 @@ const Welcome = () => {
   const isLastSlide = activeIndex === onboarding.length - 1;
 
   return (
-    <SafeAreaView className="flex-1 bg-[#020611] items-center">
+    <SafeAreaView className="flex-1 items-center bg-[#020611]">
       <StatusBar backgroundColor="#020611" barStyle="light-content" />
 
-      <View className="w-full flex justify-between flex-row px-4">
-        <Text className="text-[#1ED2EE] text-2xl font-bold">
+      <View className="flex w-full flex-row justify-between px-4">
+        <Text className="text-2xl font-bold text-[#1ED2EE]">
           Step {activeIndex + 1} of 3
         </Text>
         <Pressable
-          className="flex justify-end items-end"
+          className="flex items-end justify-end"
           onPress={() => router.replace("/(auth)/sign-up")}
         >
           <Text className="text-[#9BA2AE]">Skip</Text>
@@ -31,8 +31,8 @@ const Welcome = () => {
       <Swiper
         ref={swiperRef}
         loop={false}
-        dot={<View className="bg-slate-800 w-12 h-1 mx-4 rounded-full" />}
-        activeDot={<View className="bg-[#1ED2EE] w-12 h-1 mx-4 rounded-full" />}
+        dot={<View className="mx-4 h-1 w-12 rounded-full bg-slate-800" />}
+        activeDot={<View className="mx-4 h-1 w-12 rounded-full bg-[#1ED2EE]" />}
         onIndexChanged={(index) => {
           setActiveIndex(index);
         }}
@@ -46,7 +46,7 @@ const Welcome = () => {
         ))}
       </Swiper>
 
-      <View className="w-full px-10 mb-4">
+      <View className="mb-4 w-full px-10">
         <CustomButton
           title={isLastSlide ? "Get Started" : "Next"}
           className="mx-12r"
