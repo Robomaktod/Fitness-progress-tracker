@@ -1,10 +1,10 @@
 import { router } from "expo-router";
 import React, { useRef, useState } from "react";
-import { View, Text, Pressable, StatusBar } from "react-native";
+import { View, Text, Pressable, StatusBar, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Swiper from "react-native-swiper";
 
-import CustomButton from "@/components/CustomButton";
+import CustomButton from "@/components/shared/CustomButton";
 import { onboarding } from "@/constants";
 
 const Welcome = () => {
@@ -37,13 +37,13 @@ const Welcome = () => {
           setActiveIndex(index);
         }}
       >
-        {onboarding.map((item) => (
-          <View key={item.id} className="flex-1">
+        <FlatList data={onboarding} 
+          renderItem={({item}) => <View key={item.id} className="flex-1">
             <Text className="text-white">{item.title}</Text>
 
             <Text className="text-white">{item.description}</Text>
-          </View>
-        ))}
+          </View>}
+        />
       </Swiper>
 
       <View className="mb-4 w-full px-10">

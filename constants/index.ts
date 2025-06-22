@@ -2,6 +2,7 @@ import error from "@/assets/icons/error.png";
 import google from "@/assets/icons/google.png";
 import success from "@/assets/icons/success.png";
 import mainIcon from "@/assets/images/react-logo.png";
+import { MealTimeOption, StaticStatCardInfo } from "@/types/health";
 
 export const images = {
   mainIcon,
@@ -74,3 +75,64 @@ export const gradients = {
   neonParty: ["#ff00cc", "#3333ff", "#00ffcc"],
 } as const;
 export type GradientName = keyof typeof gradients;
+
+export const STATIC_ACTIVITY_CARDS: StaticStatCardInfo[] = [
+  {
+    id: "calories",
+    title: "Calories",
+    defaultIconName: "fire",
+    defaultIconProvider: "FontAwesome5",
+    defaultIconClassName: "text-orange-400",
+    defaultBlurBgClassName: "bg-purple-500/10",
+  },
+  {
+    id: "heartRate",
+    title: "Heart Rate",
+    defaultIconName: "heartbeat",
+    defaultIconProvider: "FontAwesome5",
+    defaultIconClassName: "text-red-400",
+    defaultBlurBgClassName: "bg-blue-500/10",
+  },
+  {
+    id: "steps",
+    title: "Steps",
+    defaultIconName: "shoe-prints",
+    defaultIconProvider: "FontAwesome5",
+    defaultIconClassName: "text-green-400",
+    defaultBlurBgClassName: "bg-green-500/10",
+  },
+  {
+    id: "sleep",
+    title: "Sleep",
+    defaultIconName: "moon",
+    defaultIconProvider: "Ionicons",
+    defaultIconClassName: "text-purple-400",
+    defaultBlurBgClassName: "bg-yellow-500/10",
+  },
+];
+
+export const MEAL_TIME_OPTIONS: MealTimeOption[] = [
+  {
+    id: "Breakfast",
+    name: "Breakfast",
+    iconName: "cafe",
+    iconProvider: "Ionicons",
+  },
+  {
+    id: "Lunch",
+    name: "Lunch",
+    iconName: "restaurant",
+    iconProvider: "Ionicons",
+  },
+  { 
+    id: "Dinner", 
+    name: "Dinner", 
+    iconName: "moon", 
+    iconProvider: "Ionicons" },
+  {
+    id: "Snacks",
+    name: "Snacks",
+    iconName: "ice-cream",
+    iconProvider: "Ionicons",
+  },
+];

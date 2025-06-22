@@ -1,3 +1,4 @@
+
 import { PressableProps, TextInputProps, TextProps } from "react-native";
 
 import { GradientName } from "@/constants";
@@ -14,7 +15,7 @@ declare interface ButtonProps extends PressableProps {
 }
 
 declare interface InputFieldProps extends TextInputProps {
-  label: string;
+  label?: string;
   icon?: any;
   secureTextEntry?: boolean;
   labelStyle?: string;
@@ -27,4 +28,28 @@ declare interface InputFieldProps extends TextInputProps {
 declare interface GradientTextProps extends TextProps {
   className?: string;
   bgVariant?: GradientName;
+  colors?: readonly [string, string, ...string[]];
 }
+
+declare interface ScoreCircleProps {
+  scorePercentage: number;
+  size?: number;
+  strokeWidth?: number;
+  progressColorFrom?: string;
+  progressColorTo?: string;
+  trackColor?: string;
+  textColor?: string;
+  animationDuration?: number;
+  centerTextFontFamily?: string;
+  containerClassName?: string;
+  centerTextFontSize?: number;
+}
+declare interface ActivityStatsSectionProps {
+  dynamicStatsData?: Record<
+    string,
+    Partial<Omit<StatCardData, "id" | "title" | "iconName" | "iconProvider">>
+  >;
+  isLoading?: boolean;
+  error?: string | null;
+}
+

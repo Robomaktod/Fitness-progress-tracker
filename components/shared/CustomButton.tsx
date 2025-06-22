@@ -64,5 +64,3 @@ const CustomButton = ({
 };
 
 export default CustomButton;
-
-//bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white font-bold  transition-all duration-300 transform hover:scale-[0.98] active:scale-[0.95] shadow-[0_0_15px_rgba(80,200,255,0.4)]

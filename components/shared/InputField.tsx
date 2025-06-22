@@ -4,7 +4,7 @@ import {
   Text,
   Image,
   KeyboardAvoidingView,
-  TouchableWithoutFeedback,
+  Pressable,
   Keyboard,
   Platform,
 } from "react-native";
@@ -26,9 +26,9 @@ const InputField = ({
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <Pressable onPress={Keyboard.dismiss}>
         <View className="my-2 w-full">
-          <Text className={`mb-3 text-lg ${labelStyle}`}>{label}</Text>
+          {label && <Text className={`mb-3 text-base font-medium text-gray-300 ${labelStyle}`}>{label}</Text>}
           <View
             className={`relative flex flex-row items-center justify-start rounded-lg border-purple-500/50 bg-gray-900/60 transition-all duration-300 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 ${containerStyle}`}
           >
@@ -42,7 +42,7 @@ const InputField = ({
             />
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     </KeyboardAvoidingView>
   );
 };
