@@ -10,28 +10,31 @@ import {
 import { BlurView } from 'expo-blur';
 import FoodListItem from "./FoodListItem";
 import { useAllNutritionLogs } from "@/api/UseNutritionQueries";
+import { useAuth } from "@clerk/clerk-expo";
 
 interface MealSectionCardProps {
   mealSection: FoodLogMealSectionData;
+  date: Date; // Add date prop
   onAddFoodToMeal?: (mealName: MealName) => void;
   onFoodItemPress?: (foodItem: FoodLogItemData) => void;
 }
 
 const MealSectionCard: React.FC<MealSectionCardProps> = ({
   mealSection,
+  date,
   onAddFoodToMeal,
   onFoodItemPress,
 }) => {
   const MealIcon =
     mealSection.iconProvider === "Ionicons" ? Ionicons : FontAwesome5;
 
-  const { data: logs, isLoading, isError } = useAllNutritionLogs();
+  const { userId } = useAuth();
+  const { data: logs, isLoading, isError } = useAllNutritionLogs(userId ?? "Error", date);
 
   const filteredLogs = (logs || []).filter(
     (log: any) => log.mealType === mealSection.mealName
   );
 
-  // Transform logs to FoodLogItemData[] for FoodListItem
   const foodItems = filteredLogs.map((log: any) => ({
     id: String(log.nutritionLogId),
     name: log.food?.name || 'Unknown',
@@ -41,14 +44,18 @@ const MealSectionCard: React.FC<MealSectionCardProps> = ({
       fat: log.food?.fatG || '0',
       carbs: log.food?.carbsG || '0',
     },
-    iconProvider: 'FontAwesome5', // or use logic if you want to vary
-    iconName: 'utensils', // or use logic if you want to vary
-    iconColorClassName: 'text-yellow-400', // or use logic if you want to vary
-    iconBgClassName: 'bg-yellow-900', // or use logic if you want to vary
-    // ...add any other fields needed by FoodLogItemData
-    originalLog: log, // optional, for reference
+    iconProvider: "FontAwesome5" as const,
+    iconName: 'utensils', 
+    iconColorClassName: 'text-yellow-400', 
+    iconBgClassName: 'bg-yellow-900', 
+    originalLog: log,
   }));
-  console.log(foodItems)
+
+  const totalCalories = filteredLogs.reduce((sum: number, log: any) => {
+    const calories = Number(log.food?.calories) || 0;
+    const quantity = Number(log.quantityConsumed) || 1;
+    return sum + (calories * quantity) / 100;
+  }, 0);
 
   return (
     <BlurView
@@ -73,7 +80,7 @@ const MealSectionCard: React.FC<MealSectionCardProps> = ({
             <Text
               className={`${mealSection.iconColorClassName} text-base font-bold`}
             >
-              {mealSection.totalCalories}
+              {Math.round(totalCalories)}
             </Text>
           </Pressable>
         </View>

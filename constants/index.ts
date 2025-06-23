@@ -130,8 +130,8 @@ export const MEAL_TIME_OPTIONS: MealTimeOption[] = [
     iconName: "moon", 
     iconProvider: "Ionicons" },
   {
-    id: "Snacks",
-    name: "Snacks",
+    id: "Snack",
+    name: "Snack",
     iconName: "ice-cream",
     iconProvider: "Ionicons",
   },

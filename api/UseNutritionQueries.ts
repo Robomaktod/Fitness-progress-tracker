@@ -1,45 +1,28 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './apiClient';
 
-// Get all nutrition logs
-export function useAllNutritionLogs() {
+export function useAllNutritionLogs(userId: string, date?: Date) {
   return useQuery({
-    queryKey: ['nutrition', 'all'],
+    queryKey: ['nutrition', 'all', userId, date?.toISOString()],
     queryFn: async () => {
-      const { data } = await apiClient.get('/nutrition');
+      const params = new URLSearchParams({
+        userId,
+        ...(date ? { date: date.toISOString() } : {}),
+      }).toString();
+      const { data } = await apiClient.get(`/nutrition/getAll?${params}`);
       return data;
     },
+    enabled: !!userId,
   });
 }
 
-export function useNutritionLogById(id: string | number) {
-  return useQuery({
-    queryKey: ['nutrition', 'id', id],
-    queryFn: async () => {
-      const { data } = await apiClient.get(`/nutrition/${id}`);
-      return data;
-    },
-    enabled: !!id,
-  });
-}
-
-
-export function useNutritionLogsByMealType(mealType: string) {
-  return useQuery({
-    queryKey: ['nutrition', 'mealType', mealType],
-    queryFn: async () => {
-      const { data } = await apiClient.get(`/nutrition/mealType/${mealType}`);
-      return data;
-    },
-    enabled: !!mealType,
-  });
-}
 
 export function useCreateNutritionLog() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (food: any) => {
-      const { data } = await apiClient.post("/nutrition/", food);
+      console.log("Creating nutrition log with food:", food);
+      const { data } = await apiClient.post("/nutrition/create/", food);
       return data;
     },
     onSuccess: () => {

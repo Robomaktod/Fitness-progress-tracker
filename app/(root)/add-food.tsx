@@ -19,6 +19,7 @@ import { useFoodByName } from "@/api/useFoodQueries";
 import Header from "@/components/ui/add-food/Header";
 import { useCreateNutritionLog } from "@/api/UseNutritionQueries";
 import { MEAL_TIME_OPTIONS } from "@/constants";
+import Divider from "@/components/shared/Divider";
 
 const modalBackgroundGradient: readonly [string, string, string] = [
   "#18132F",
@@ -62,7 +63,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [searchTouched, setSearchTouched] = useState(false);
-  const [weight, setWeight] = useState("100"); // grams, default 100g
+  const [weight, setWeight] = useState("100");
 
   const {
     data: searchResultsRaw,
@@ -73,12 +74,12 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
 
   const addNutritionMutation = useCreateNutritionLog();
 
-  const searchResults =
-    Array.isArray(searchResultsRaw) || searchResultsRaw === undefined
-      ? searchResultsRaw
-      : [searchResultsRaw];
+  const searchResults = Array.isArray(searchResultsRaw)
+    ? searchResultsRaw.filter(Boolean)
+    : searchResultsRaw && typeof searchResultsRaw === 'object'
+      ? Object.values(searchResultsRaw).filter(Boolean)
+      : [];
 
-  // Only trigger search if user has typed something
   React.useEffect(() => {
     if (searchTerm && searchTouched) {
       refetchSearch();
@@ -131,7 +132,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
       swipeDirection={["down"]}
       onBackdropPress={onClose}
       onBackButtonPress={onClose}
-      style={{ justifyContent: "flex-end", margin: 0 }}
+      style={{ justifyContent: "flex-end", margin: 0, height: "100%" }}
       animationIn="slideInUp"
       animationOut="slideOutDown"
       backdropTransitionOutTiming={0}
@@ -158,7 +159,24 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
               />
 
               {searchTerm.length > 0 && searchTouched && (
-                <View className="absolute left-0 right-0 top-14 z-10 bg-dark-200/95 rounded-lg border border-purple-600/30 max-h-56">
+                <ScrollView style={{
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  top: 56,
+                  zIndex: 100,
+                  backgroundColor: '#18132F',
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: '#a78bfa', 
+                  maxHeight: 540, 
+                  overflow: 'scroll',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 4,
+                  elevation: 10,
+                }}>
                   {isSearching ? (
                     <Text className="p-4 text-center text-gray-400">
                       Searching...
@@ -172,14 +190,14 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                       No results found
                     </Text>
                   ) : (
-                    searchResults.map((item: any, idx: number) => (
+                    searchResults.slice(0, 10).map((item: any, idx: number) => (
                       <Pressable
-                        key={item.foodId || idx}
+                        key={item.foodId || item.id || idx}
                         className="p-3 border-b border-gray-700"
                         onPress={() => {
                           setFoodData((prev: any) => ({
                             ...prev,
-                            foodId: item.id,
+                            foodId: item.foodId || item.id,
                             foodName: item.product_name || "",
                             calories: calcByWeight(item.energy_kcal_100g),
                             protein: calcByWeight(item.proteins_100g),
@@ -199,45 +217,15 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                             : "No kcal info"}
                         </Text>
                         <Text className="text-xs text-gray-400">
-                          P: {item.proteins_100g ?? "-"}g | C:{" "}
-                          {item.carbohydrates_100g ?? "-"}g | F:{" "}
-                          {item.fat_100g ?? "-"}g
+                          P: {item.proteins_100g ?? "-"}g | C: {item.carbohydrates_100g ?? "-"}g | F: {item.fat_100g ?? "-"}g
                         </Text>
                       </Pressable>
                     ))
                   )}
-                </View>
+                </ScrollView>
               )}
             </View>
-
-            <InputField
-              label="Weight (g)"
-              value={weight}
-              onChangeText={setWeight}
-              placeholder="e.g., 150"
-              placeholderTextColor="#9AA6B2"
-              keyboardType="numeric"
-              className="mb-4"
-            />
-
-            <CustomButton
-              title="Manual Entry"
-              bgVariant="default"
-              IconLeft={() => (
-                <FontAwesome5
-                  name="plus"
-                  size={16}
-                  className="mr-2 text-white"
-                  color="white"
-                />
-              )}
-              onPress={() => console.log("Switch to/confirm manual entry mode")}
-              className="mb-6 border border-purple-500/50 bg-purple-600/30"
-              isGradientActive={false}
-              textVariant="default"
-              gradientStyles="py-3"
-            />
-
+              <Divider />
             <InputField
               label="Food Name"
               value={foodData.foodName}
@@ -250,7 +238,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
             />
 
             <View className="mb-4 flex-row justify-between space-x-3">
-              <View className="flex-1">
+              <View className="flex-1 mx-1">
                 <InputField
                   label="Calories"
                   value={foodData.calories}
@@ -262,16 +250,16 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                   keyboardType="numeric"
                 />
               </View>
-              <View className="flex-1">
-                <InputField
-                  label="Serving Size"
-                  value={foodData.servingSize}
-                  onChangeText={(text) =>
-                    setFoodData((prev: any) => ({ ...prev, servingSize: text }))
-                  }
-                  placeholder="e.g., 1 medium"
-                  placeholderTextColor="#9AA6B2"
-                />
+              <View className="flex-1 mx-1">
+               <InputField
+              label="Weight (g)"
+              value={weight}
+              onChangeText={setWeight}
+              placeholder="e.g., 150"
+              placeholderTextColor="#9AA6B2"
+              keyboardType="numeric"
+              className="mb-4"
+            />
               </View>
             </View>
 

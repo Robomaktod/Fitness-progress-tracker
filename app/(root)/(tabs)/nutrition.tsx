@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { format, addDays, subDays, isValid as isValidDate } from 'date-fns';
 import {
   ScrollView,
@@ -20,6 +20,8 @@ import NutritionLogHeader from "@/components/ui/nutrition/NutritionLogHeader";
 import CustomButton from "@/components/shared/CustomButton";
 import { FoodLogMealSectionData, MealName, FoodLogItemData } from "@/types/health";
 import { useAllFood } from "@/api/useFoodQueries";
+import { useAuth } from "@clerk/clerk-expo";
+import { useAllNutritionLogs } from "@/api/UseNutritionQueries";
 
 const screenBackgroundGradient: readonly [string, string, string] = [
   "#111827",
@@ -33,9 +35,6 @@ const NutritionLogScreen: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [mealToAddTo, setMealToAddTo] = useState<MealName | null>(null);
-
-  const formattedDateForAPI = format(currentDate, 'yyyy-MM-dd');
-
 
   const handleAddFoodToMeal = (mealName: MealName) => {
     setMealToAddTo(mealName);
@@ -60,7 +59,21 @@ const NutritionLogScreen: React.FC = () => {
     error: fetchFoodLogErrorMessage,
   } = useAllFood();
 
-  const mealNames: MealName[] = ["Breakfast", "Lunch", "Dinner", "Snacks"];
+  const { userId } = useAuth();
+  const {
+    data: allLogs,
+    isLoading: isLoadingLogs,
+    isError: fetchLogsError,
+    refetch: refetchLogs,
+    isRefetching: isRefetchingLogs,
+    error: fetchLogsErrorMessage,
+  } = useAllNutritionLogs(userId ?? "Error", currentDate);
+
+  useEffect(() => {
+    refetchLogs();
+  }, [currentDate]);
+
+  const mealNames: MealName[] = ["Breakfast", "Lunch", "Dinner", "Snack"];
   const mealSections: FoodLogMealSectionData[] = mealNames.map((mealName) => {
     const foodItems = allFoods.filter((item: any) => item.mealName === mealName);
     const totalCalories = foodItems.reduce((sum: number, item: any) => {
@@ -124,6 +137,7 @@ const NutritionLogScreen: React.FC = () => {
               <MealSectionCard
                 key={item.mealName}
                 mealSection={item}
+                date={currentDate} 
                 onAddFoodToMeal={handleAddFoodToMeal}
                 onFoodItemPress={handleFoodItemPress}
               />
@@ -147,3 +161,4 @@ const NutritionLogScreen: React.FC = () => {
 };
 
 export default NutritionLogScreen;
+
