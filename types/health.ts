@@ -1,5 +1,3 @@
-
-
 import { FontAwesome5, Ionicons } from "@expo/vector-icons"; // Assuming you use these, adjust if not
 import { ComponentProps } from "react";
 
@@ -141,6 +139,19 @@ export interface UserProfileData {
   name: string;
   avatarUrl?: string; // Optional, can fallback to a default
   memberSince: string; // e.g., "May 2025"
+  bodyMetrics: {
+    currentWeight: ProfileMetric;
+    goalWeight: ProfileMetric;
+    height: ProfileMetric;
+    age: ProfileMetric;
+  };
+  fitnessGoals: FitnessGoal[];
+  dailyTargets: {
+    calories: DailyTarget;
+    protein: DailyTarget;
+    carbs: DailyTarget;
+    fat: DailyTarget;
+  };
 }
 
 export interface ProfileMetric {

@@ -1,14 +1,11 @@
 import { FontAwesome5 } from "@expo/vector-icons"; // For the '+' icon in the button
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { LineChart } from "react-native-gifted-charts";
+import { Dimensions } from "react-native";
 
 import SectionCard from "@/components/ui/progress/SectionCard";
 import { WeightProgressData } from "@/types/health"; // Assuming types are in types/health.ts
-
-// Charting Library Placeholder:
-// import { LineChart } from 'react-native-chart-kit'; // Example if using this library
-// import { Dimensions } from 'react-native';
-// const screenWidth = Dimensions.get('window').width;
 
 interface WeightProgressCardProps {
   data: WeightProgressData;
@@ -41,48 +38,18 @@ const WeightProgressCard: React.FC<WeightProgressCardProps> = ({
 }) => {
   const { currentWeight, weightUnit, change, goalWeight, history } = data;
 
-  // Placeholder for chart data transformation if using a library
-  // const chartData = {
-  //   labels: history.map(entry => entry.date),
-  //   datasets: [
-  //     {
-  //       data: history.map(entry => entry.weight),
-  //       color: (opacity = 1) => `rgba(167, 139, 250, ${opacity})`, // purple-400
-  //       strokeWidth: 2,
-  //     },
-  //   ],
-  //   legend: ["Weight"],
-  // };
-
-  // Chart config for react-native-chart-kit (example)
-  // const chartConfig = {
-  //   backgroundColor: 'transparent',
-  //   backgroundGradientFromOpacity: 0,
-  //   backgroundGradientToOpacity: 0,
-  //   decimalPlaces: 1,
-  //   color: (opacity = 1) => `rgba(224, 224, 224, ${opacity})`, // Light gray for labels/grid
-  //   labelColor: (opacity = 1) => `rgba(156, 163, 175, ${opacity})`, // gray-400
-  //   style: {
-  //     borderRadius: 16,
-  //   },
-  //   propsForDots: {
-  //     r: '4',
-  //     strokeWidth: '2',
-  //     stroke: '#A78BFA', // purple-400
-  //   },
-  //   withVerticalLines: false,
-  //   withHorizontalLines: true,
-  //   propsForBackgroundLines: {
-  //     strokeDasharray: '', // Solid lines
-  //     stroke: '#4B5563', // gray-600 for grid lines
-  //     strokeOpacity: 0.5,
-  //   },
-  // };
+  // Prepare chart data for react-native-gifted-charts
+  const chartData = history.map((entry) => ({
+    value: entry.weight,
+    label: entry.date.slice(5),
+    dataPointText: entry.weight.toString(),
+  }));
+  const screenWidth = Dimensions.get("window").width;
 
   return (
     <SectionCard
-      borderColorClassName="border-purple-500/30" // Violet border, 30% opacity
-      shadowColor="#8B5CF6" // Violet shadow/glow tint
+      borderColorClassName="border-purple-500/30"
+      shadowColor="#8B5CF6"
       aria-label="Weight Progress Section"
     >
       {/* Header: Title and Add Weight Button */}
@@ -120,7 +87,7 @@ const WeightProgressCard: React.FC<WeightProgressCardProps> = ({
         />
         <WeightStatDisplay
           label="Change"
-          value={`${change >= 0 ? "+" : ""}${change.toFixed(1)}`} // Add '+' for positive change
+          value={`${change >= 0 ? "+" : ""}${change.toFixed(1)}`} 
           unit={weightUnit}
           valueClassName={change < 0 ? "text-green-400" : "text-red-400"} // Green for loss, Red for gain (or vice-versa)
         />
@@ -134,40 +101,49 @@ const WeightProgressCard: React.FC<WeightProgressCardProps> = ({
 
       {/* Chart Placeholder */}
       <View className="relative mb-2 h-[200px] items-center justify-center rounded-md bg-dark-100/30">
-        {/*
-        // Example of using react-native-chart-kit:
-        <LineChart
-          data={chartData}
-          width={screenWidth - 64} // (screenWidth - paddingHorizontalOfCard*2 - internalPadding*2)
-          height={200}
-          chartConfig={chartConfig}
-          bezier // For smooth lines
-          style={{ marginVertical: 8, borderRadius: 16 }}
-          yAxisSuffix={` ${weightUnit}`}
-          withShadow={false} // Turn off default shadow if using SectionCard's shadow
-        />
-        */}
-        <Text className="text-gray-500">Weight Chart Placeholder</Text>
-        <Text className="mt-1 text-xs text-gray-600">
-          (Line chart will be rendered here)
-        </Text>
-        {/* X-axis and Y-axis line placeholders from HTML */}
-        <View className="absolute bottom-0 left-0 right-0 h-[1px] bg-gray-700/50" />
-        <View className="absolute bottom-0 left-0 top-0 w-[1px] bg-gray-700/50" />
+        {chartData.length > 0 ? (
+          <LineChart
+            isAnimated
+            animationDuration={800}
+            data={chartData}         
+            height={180}
+            width={screenWidth - 64}
+            color="#8B5CF6"
+            textColor1="#8B5CF6"
+            dataPointsColor1="#8B5CF6"
+            dataPointsRadius={3}
+            xAxisLabelTexts={chartData.map((d) => d.label)}
+            xAxisLabelTextStyle={{ color: "#9CA3AF", fontSize: 10, width: 40 }}
+            xAxisColor={"#4B5563"}
+            yAxisColor={"#4B5563"}
+            yAxisTextStyle={{ color: "#9CA3AF", fontSize: 10 }}
+            // yAxisLabelWidth={40}
+            noOfSections={4}
+            maxValue={Math.max(...chartData.map((d) => d.value), 0) + 10}
+            mostNegativeValue={0}
+            rulesColor={"#4B5563"}
+            rulesType="dashed"
+          />
+        ) : (
+          <>
+            <Text className="text-gray-500">No weight data to display.</Text>
+            <Text className="mt-1 text-xs text-gray-600">
+              (Add a weight entry to see your progress chart)
+            </Text>
+          </>
+        )}
       </View>
 
       {/* X-axis Labels (Placeholder) */}
-      <View className="flex-row justify-between px-1">
-        {history.slice(0, 5).map(
-          (
-            entry, // Display up to 5 labels
-          ) => (
-            <Text key={entry.date} className="text-xs text-gray-400">
-              {entry.date}
+      {/* <View className="flex-row justify-between px-1">
+        {[...new Set(history.map((entry) => entry.date))].slice(0, 5).map(
+          (date) => (
+            <Text key={date} className="text-xs text-gray-400">
+              {date.slice(5)}
             </Text>
           ),
         )}
-      </View>
+      </View> */}
     </SectionCard>
   );
 };

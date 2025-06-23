@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import React, { useState, useEffect } from "react";
 import { format, addDays, subDays, isValid as isValidDate } from 'date-fns';
 import {
-  ScrollView,
+  FlatList,
   View,
   StatusBar,
   Text,
@@ -80,10 +80,12 @@ const NutritionLogScreen: React.FC = () => {
       const cal = parseInt(item.calories);
       return sum + (isNaN(cal) ? 0 : cal);
     }, 0);
+    // Use a valid FontAwesome5 icon name as fallback
+    const fallbackIcon = mealName === 'Breakfast' ? 'egg' : mealName === 'Lunch' ? 'hamburger' : mealName === 'Dinner' ? 'utensils' : 'cookie';
     return {
       mealName,
       totalCalories: totalCalories ? `${totalCalories} cal` : "0 cal",
-      iconName: foodItems[0]?.iconName || "utensils",
+      iconName: foodItems[0]?.iconName || fallbackIcon,
       iconProvider: foodItems[0]?.iconProvider || "FontAwesome5",
       iconColorClassName: foodItems[0]?.iconColorClassName || "text-cyan-400",
       borderColorClassName: foodItems[0]?.borderColorClassName || "border-cyan-500/30",
@@ -121,9 +123,20 @@ const NutritionLogScreen: React.FC = () => {
             <CustomButton title="Retry" onPress={() => refetchFoodLog()} className="mt-4 w-1/2" />
           </View>
         ) : (
-          <ScrollView
+          // Use FlatList instead of ScrollView to avoid nested VirtualizedLists
+          <FlatList
+            data={mealSections}
+            keyExtractor={(item) => item.mealName}
+            renderItem={({ item }) => (
+              <MealSectionCard
+                mealSection={item}
+                date={currentDate}
+                onAddFoodToMeal={handleAddFoodToMeal}
+                onFoodItemPress={handleFoodItemPress}
+              />
+            )}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 80 }}
             showsVerticalScrollIndicator={false}
-            contentContainerClassName="px-4 pb-20"
             refreshControl={
               <RefreshControl
                 refreshing={isRefetchingFoodLog}
@@ -132,17 +145,7 @@ const NutritionLogScreen: React.FC = () => {
                 colors={["#FFFFFF"]}
               />
             }
-          >
-            {mealSections.map((item) => (
-              <MealSectionCard
-                key={item.mealName}
-                mealSection={item}
-                date={currentDate} 
-                onAddFoodToMeal={handleAddFoodToMeal}
-                onFoodItemPress={handleFoodItemPress}
-              />
-            ))}
-          </ScrollView>
+          />
         )}
       </SafeAreaView>
       {isAddFoodModalVisible && (

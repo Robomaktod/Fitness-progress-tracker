@@ -26,14 +26,6 @@ export default function RootLayout() {
       }}
     >
       <Stack.Screen name="(tabs)" />
-
-      <Stack.Screen
-        name="add-activity"
-        options={{
-          presentation: "modal",
-          animation: "slide_from_bottom",
-        }}
-      />
       <Stack.Screen
         name="add-food"
         options={{

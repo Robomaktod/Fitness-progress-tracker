@@ -72,7 +72,7 @@ export default function TabLayout() {
         }}
       />
 
-      {/* Central Floating Action Button Placeholder Tab */}
+      {/* Central Floating Action Button Placeholder Tab
       <Tabs.Screen
         name="add-placeholder" // Dummy name
         options={{
@@ -89,10 +89,10 @@ export default function TabLayout() {
               "Central Add button pressed - opening WheelMenu or default add screen",
             );
             // Example: Show WheelMenu if you have it as a modal, or push to a selection screen
-            router.push("/add-activity"); // Or trigger your WheelMenu
+            router.push("/activity"); // Or trigger your WheelMenu
           },
         }}
-      />
+      /> */}
 
       <Tabs.Screen
         name="activity" // Renamed for consistency if it's about logging activity
