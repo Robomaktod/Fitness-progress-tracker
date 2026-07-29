@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, Pressable, Platform } from 'react-native';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
+import React, { useState } from "react";
+import { View, Text, Pressable, Platform } from "react-native";
 
 interface DatePickerProps {
   value: Date | null;
@@ -10,7 +12,13 @@ interface DatePickerProps {
   maximumDate?: Date;
 }
 
-const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, label, minimumDate, maximumDate }) => {
+const DatePicker: React.FC<DatePickerProps> = ({
+  value,
+  onChange,
+  label,
+  minimumDate,
+  maximumDate,
+}) => {
   const [show, setShow] = useState(false);
 
   const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -22,20 +30,20 @@ const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, label, minimum
 
   return (
     <View className="mb-2">
-      {label && <Text className="text-white mb-1">{label}</Text>}
+      {label && <Text className="mb-1 text-white">{label}</Text>}
       <Pressable
         onPress={() => setShow(true)}
-        className="bg-dark-100 px-4 py-2 rounded-lg mb-2"
+        className="mb-2 rounded-lg bg-dark-100 px-4 py-2"
       >
         <Text className="text-white">
-          {value ? value.toISOString().slice(0, 10) : 'Select Date'}
+          {value ? value.toISOString().slice(0, 10) : "Select Date"}
         </Text>
       </Pressable>
       {show && (
         <DateTimePicker
           value={value || new Date()}
           mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          display={Platform.OS === "ios" ? "spinner" : "default"}
           onChange={handleChange}
           minimumDate={minimumDate}
           maximumDate={maximumDate}

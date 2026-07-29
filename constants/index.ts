@@ -124,11 +124,12 @@ export const MEAL_TIME_OPTIONS: MealTimeOption[] = [
     iconName: "restaurant",
     iconProvider: "Ionicons",
   },
-  { 
-    id: "Dinner", 
-    name: "Dinner", 
-    iconName: "moon", 
-    iconProvider: "Ionicons" },
+  {
+    id: "Dinner",
+    name: "Dinner",
+    iconName: "moon",
+    iconProvider: "Ionicons",
+  },
   {
     id: "Snack",
     name: "Snack",

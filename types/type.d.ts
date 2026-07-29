@@ -1,4 +1,3 @@
-
 import { PressableProps, TextInputProps, TextProps } from "react-native";
 
 import { GradientName } from "@/constants";
@@ -52,4 +51,3 @@ declare interface ActivityStatsSectionProps {
   isLoading?: boolean;
   error?: string | null;
 }
-

@@ -1,10 +1,11 @@
+import { useOAuth } from "@clerk/clerk-expo";
+import { router } from "expo-router";
 import { Alert, Image, Text, View } from "react-native";
 
 import { icons } from "@/constants";
+import { googleOAuth } from "@/lib/auth";
 
 import CustomButton from "./CustomButton";
-import { useOAuth } from "@clerk/clerk-expo";
-import { router } from "expo-router";
 
 const OAuth = () => {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
@@ -15,6 +16,7 @@ const OAuth = () => {
     if (result.code === "session_exists") {
       Alert.alert("Success", "Session exists. Redirecting to home screen.");
       router.replace("/(root)/(tabs)/home");
+      return;
     }
 
     Alert.alert(result.success ? "Success" : "Error", result.message);
@@ -29,7 +31,7 @@ const OAuth = () => {
         <Image
           source={icons.google}
           resizeMode="contain"
-          className="size-8 mr-4"
+          className="mr-4 size-8"
         />
       )}
       onPress={handleGoogleSignIn}

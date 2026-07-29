@@ -1,16 +1,9 @@
-import { Text, TextProps, View } from "react-native";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
+import { Text, View } from "react-native";
 
-const gradients = {
-  default: ["#6EE7B7", "#3B82F6"],
-  // Add more gradient variants as needed
-};
-
-type GradientTextProps = TextProps & {
-  bgVariant?: keyof typeof gradients;
-  colors?: [string, string];
-};
+import { gradients } from "@/constants";
+import { GradientTextProps } from "@/types/type";
 
 const GradientText = ({
   className,
