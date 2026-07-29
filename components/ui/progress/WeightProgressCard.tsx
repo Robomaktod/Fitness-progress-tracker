@@ -1,8 +1,8 @@
 import { FontAwesome5 } from "@expo/vector-icons"; // For the '+' icon in the button
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { LineChart } from "react-native-gifted-charts";
 import { Dimensions } from "react-native";
+import { LineChart } from "react-native-gifted-charts";
 
 import SectionCard from "@/components/ui/progress/SectionCard";
 import { WeightProgressData } from "@/types/health"; // Assuming types are in types/health.ts
@@ -87,7 +87,7 @@ const WeightProgressCard: React.FC<WeightProgressCardProps> = ({
         />
         <WeightStatDisplay
           label="Change"
-          value={`${change >= 0 ? "+" : ""}${change.toFixed(1)}`} 
+          value={`${change >= 0 ? "+" : ""}${change.toFixed(1)}`}
           unit={weightUnit}
           valueClassName={change < 0 ? "text-green-400" : "text-red-400"} // Green for loss, Red for gain (or vice-versa)
         />
@@ -105,7 +105,7 @@ const WeightProgressCard: React.FC<WeightProgressCardProps> = ({
           <LineChart
             isAnimated
             animationDuration={800}
-            data={chartData}         
+            data={chartData}
             height={180}
             width={screenWidth - 64}
             color="#8B5CF6"
