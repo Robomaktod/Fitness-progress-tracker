@@ -1,32 +1,6 @@
 import * as Linking from "expo-linking";
-import * as SecureStore from "expo-secure-store";
 
-import { fetchAPI } from "@/lib/fetch";
-
-export const tokenCache = {
-  async getToken(key: string) {
-    try {
-      const item = await SecureStore.getItemAsync(key);
-      if (item) {
-        console.log(`${key} was used 🔐 \n`);
-      } else {
-        console.log("No values stored under key: " + key);
-      }
-      return item;
-    } catch (error) {
-      console.error("SecureStore get item error: ", error);
-      await SecureStore.deleteItemAsync(key);
-      return null;
-    }
-  },
-  async saveToken(key: string, value: string) {
-    try {
-      return SecureStore.setItemAsync(key, value);
-    } catch (err) {
-      return;
-    }
-  },
-};
+import { apiClient } from "@/api/apiClient";
 
 export const googleOAuth = async (startOAuthFlow: any) => {
   try {
@@ -39,13 +13,11 @@ export const googleOAuth = async (startOAuthFlow: any) => {
         await setActive({ session: createdSessionId });
 
         if (signUp.createdUserId) {
-          await fetchAPI("/(api)/user", {
-            method: "POST",
-            body: JSON.stringify({
-              name: `${signUp.firstName} ${signUp.lastName}`,
-              email: signUp.emailAddress,
-              clerkId: signUp.createdUserId,
-            }),
+          // NOTE: verify this matches the actual backend route for user creation.
+          await apiClient.post("/user", {
+            name: `${signUp.firstName} ${signUp.lastName}`,
+            email: signUp.emailAddress,
+            clerkId: signUp.createdUserId,
           });
         }
 

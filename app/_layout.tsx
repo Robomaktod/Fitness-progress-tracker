@@ -1,9 +1,9 @@
 // Fitness-progress-tracker1/app/_layout.tsx
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // IMPORT THESE
 import { Slot, SplashScreen, Stack, useRouter } from "expo-router"; // Slot might be needed for initial auth check
 import React, { useEffect } from "react";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // IMPORT THESE
 import "./globals.css";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
@@ -26,7 +26,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-
 
 // This component can handle the initial auth check and redirect logic
 // function InitialLayout() {
@@ -55,7 +54,6 @@ const queryClient = new QueryClient({
 //   // Slot will render the current child route (either (auth) or (root))
 //   return <Slot />;
 // }
-
 
 export default function RootLayout() {
   return (

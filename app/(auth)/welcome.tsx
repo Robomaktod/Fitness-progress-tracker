@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import React, { useRef, useState } from "react";
-import { View, Text, Pressable, StatusBar, FlatList } from "react-native";
+import { View, Text, Pressable, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Swiper from "react-native-swiper";
 
@@ -37,13 +37,19 @@ const Welcome = () => {
           setActiveIndex(index);
         }}
       >
-        <FlatList data={onboarding} 
-          renderItem={({item}) => <View key={item.id} className="flex-1">
-            <Text className="text-white">{item.title}</Text>
-
-            <Text className="text-white">{item.description}</Text>
-          </View>}
-        />
+        {onboarding.map((item) => (
+          <View
+            key={item.id}
+            className="flex-1 items-center justify-center px-6"
+          >
+            <Text className="text-center text-2xl font-bold text-white">
+              {item.title}
+            </Text>
+            <Text className="mt-4 text-center text-base text-[#9BA2AE]">
+              {item.description}
+            </Text>
+          </View>
+        ))}
       </Swiper>
 
       <View className="mb-4 w-full px-10">
