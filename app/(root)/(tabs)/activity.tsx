@@ -1,3 +1,5 @@
+import { useAuth } from "@clerk/clerk-expo";
+import { format, subDays, startOfWeek, endOfWeek } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useState, useCallback } from "react";
@@ -11,18 +13,23 @@ import {
   RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "@clerk/clerk-expo";
-import { format, subDays, startOfWeek, endOfWeek } from 'date-fns';
 
+import {
+  useFetchActivityLogs,
+  useDeleteActivityLog,
+  useCreateActivityLog,
+} from "@/api/useActivityLogs";
+import {
+  useActivityCategories,
+  useExerciseTypes,
+} from "@/api/useActivityTypes";
+import CustomButton from "@/components/shared/CustomButton";
 import ActivityLogCard from "@/components/ui/activity/ActivityLogCard";
 import ActivityLogHeader from "@/components/ui/activity/ActivityLogHeader";
-import FilterTabs from "@/components/ui/activity/FilterTabs";
-import CustomButton from "@/components/shared/CustomButton";
 import AddActivityModal from "@/components/ui/activity/AddActivityModal";
 import AddExerciseModal from "@/components/ui/activity/AddExerciseModal";
+import FilterTabs from "@/components/ui/activity/FilterTabs";
 import { ActivityLogItemData } from "@/types/health";
-import { useFetchActivityLogs, useDeleteActivityLog, useCreateActivityLog } from "@/api/useActivityLogs";
-import { useActivityCategories, useExerciseTypes } from "@/api/useActivityTypes";
 
 const screenBackgroundGradient: readonly [string, string, string] = [
   "#111827",
@@ -38,27 +45,29 @@ const ActivityLogScreen: React.FC = () => {
   const [showAddActivityModal, setShowAddActivityModal] = useState(false);
   const [showAddExerciseModal, setShowAddExerciseModal] = useState(false);
 
-  const { data: activityCategories = [] } = useActivityCategories();
-  const { data: exerciseTypes = [] } = useExerciseTypes();
+  const { data: activityCategories = [], isLoading: isLoadingCategories } =
+    useActivityCategories();
+  const { data: exerciseTypes = [], isLoading: isLoadingExerciseTypes } =
+    useExerciseTypes();
 
   // Prepare filters for the API call based on selectedFilter
   const getApiFilters = useCallback(() => {
-    if (!userId) return { userId: '' };
+    if (!userId) return { userId: "" };
     const now = new Date();
     let dateFilter;
     // If your backend supports date ranges or specific keywords, adjust this
     switch (selectedFilter) {
       case "Today":
-        dateFilter = format(now, 'yyyy-MM-dd');
+        dateFilter = format(now, "yyyy-MM-dd");
         break;
       case "Yesterday":
-        dateFilter = format(subDays(now, 1), 'yyyy-MM-dd');
+        dateFilter = format(subDays(now, 1), "yyyy-MM-dd");
         break;
       case "This Week":
         return {
           userId,
-          start: format(startOfWeek(now, { weekStartsOn: 1 }), 'yyyy-MM-dd'),
-          end: format(endOfWeek(now, { weekStartsOn: 1 }), 'yyyy-MM-dd'),
+          start: format(startOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd"),
+          end: format(endOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd"),
         };
       default:
         dateFilter = undefined;
@@ -76,10 +85,14 @@ const ActivityLogScreen: React.FC = () => {
     isFetching: isRefetchingActivities,
   } = useFetchActivityLogs(apiFilters, { enabled: !!userId });
 
-  const activityLog: ActivityLogItemData[] = Array.isArray(activityLogRaw) ? activityLogRaw : [];
+  const activityLog: ActivityLogItemData[] = Array.isArray(activityLogRaw)
+    ? activityLogRaw
+    : [];
 
-  const { mutate: deleteActivityLog, isPending: isDeletingLog } = useDeleteActivityLog();
-  const { mutate: createActivityLog, isPending: isCreating } = useCreateActivityLog();
+  const { mutate: deleteActivityLog, isPending: isDeletingLog } =
+    useDeleteActivityLog();
+  const { mutate: createActivityLog, isPending: isCreating } =
+    useCreateActivityLog();
 
   const handleFilterChange = (option: string) => {
     setSelectedFilter(option);
@@ -89,7 +102,11 @@ const ActivityLogScreen: React.FC = () => {
   const handleMoreOptions = (logId: string) => {
     Alert.alert("Activity Options", "What would you like to do?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Edit (TBD)", onPress: () => Alert.alert("Edit", "Edit functionality to be implemented.") },
+      {
+        text: "Edit (TBD)",
+        onPress: () =>
+          Alert.alert("Edit", "Edit functionality to be implemented."),
+      },
       {
         text: "Delete",
         style: "destructive",
@@ -99,18 +116,28 @@ const ActivityLogScreen: React.FC = () => {
   };
 
   const confirmDeleteLog = (logId: string) => {
-    Alert.alert("Delete Activity", "Are you sure you want to delete this log?", [
-      { text: "Cancel", style: "cancel"},
-      { text: "Delete", style: "destructive", onPress: () => {
-          deleteActivityLog(parseInt(logId, 10), {
-            onError: (deleteErr: any) => {
-              Alert.alert("Delete Failed", deleteErr.message || "Could not delete activity log.");
-            },
-            // onSuccess is handled by query invalidation in the hook
-          });
-        }
-      }
-    ]);
+    Alert.alert(
+      "Delete Activity",
+      "Are you sure you want to delete this log?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            deleteActivityLog(logId, {
+              onError: (deleteErr: any) => {
+                Alert.alert(
+                  "Delete Failed",
+                  deleteErr.message || "Could not delete activity log.",
+                );
+              },
+              // onSuccess is handled by query invalidation in the hook
+            });
+          },
+        },
+      ],
+    );
   };
 
   const renderActivityItem = ({ item }: { item: ActivityLogItemData }) => (
@@ -119,42 +146,70 @@ const ActivityLogScreen: React.FC = () => {
 
   const effectiveIsLoading = isLoadingActivities && activityLog.length === 0; // Show main loader only if no data yet
 
-  const handleAddActivity = (activity: { categoryId: string; duration: string; date: string }) => {
-    const category = activityCategories.find((cat: any) => cat.id === activity.categoryId);
-    createActivityLog({
-      categoryId: activity.categoryId,
-      categoryName: category?.name || '',
-      duration: Number(activity.duration),
-      date: activity.date,
-      type: 'activity',
-      userId,
-    }, {
-      onSuccess: () => setShowAddActivityModal(false),
-      onError: (err: any) => Alert.alert("Error", err.message || "Failed to add activity."),
-    });
+  const handleAddActivity = (activity: {
+    categoryId: string;
+    duration: string;
+    date: string;
+  }) => {
+    const category = activityCategories.find(
+      (cat) => cat.id === activity.categoryId,
+    );
+    createActivityLog(
+      {
+        categoryId: activity.categoryId,
+        categoryName: category?.name || "",
+        duration: Number(activity.duration),
+        date: activity.date,
+        type: "activity",
+        userId,
+      },
+      {
+        onSuccess: () => setShowAddActivityModal(false),
+        onError: (err: any) =>
+          Alert.alert("Error", err.message || "Failed to add activity."),
+      },
+    );
   };
 
-  const handleAddExercise = (exercise: { exerciseTypeId: string; sets: string; reps: string; date: string }) => {
-    const exerciseType = exerciseTypes.find((ex: any) => ex.id === exercise.exerciseTypeId);
-    createActivityLog({
-      exerciseTypeId: exercise.exerciseTypeId,
-      exerciseTypeName: exerciseType?.name || '',
-      sets: Number(exercise.sets),
-      reps: Number(exercise.reps),
-      date: exercise.date,
-      type: 'exercise',
-      userId,
-    }, {
-      onSuccess: () => setShowAddExerciseModal(false),
-      onError: (err: any) => Alert.alert("Error", err.message || "Failed to add exercise."),
-    });
+  const handleAddExercise = (exercise: {
+    exerciseTypeId: string;
+    sets: string;
+    reps: string;
+    date: string;
+  }) => {
+    const exerciseType = exerciseTypes.find(
+      (ex) => ex.id === exercise.exerciseTypeId,
+    );
+    createActivityLog(
+      {
+        exerciseTypeId: exercise.exerciseTypeId,
+        exerciseTypeName: exerciseType?.name || "",
+        sets: Number(exercise.sets),
+        reps: Number(exercise.reps),
+        date: exercise.date,
+        type: "exercise",
+        userId,
+      },
+      {
+        onSuccess: () => setShowAddExerciseModal(false),
+        onError: (err: any) =>
+          Alert.alert("Error", err.message || "Failed to add exercise."),
+      },
+    );
   };
 
   return (
     <LinearGradient colors={screenBackgroundGradient} className="flex-1">
       <SafeAreaView edges={["top"]} className="flex-1">
-        <StatusBar barStyle="light-content" backgroundColor={screenBackgroundGradient[0]} />
-        <ActivityLogHeader onFilterPress={() => Alert.alert("Filter Options", "Advanced filtering TBD.")} />
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor={screenBackgroundGradient[0]}
+        />
+        <ActivityLogHeader
+          onFilterPress={() =>
+            Alert.alert("Filter Options", "Advanced filtering TBD.")
+          }
+        />
         <FilterTabs
           options={["Today", "Yesterday", "This Week"]}
           selectedOption={selectedFilter}
@@ -168,15 +223,25 @@ const ActivityLogScreen: React.FC = () => {
           </View>
         ) : fetchError ? (
           <View className="flex-1 items-center justify-center px-4">
-            <Text className="text-lg text-red-400 text-center">{(fetchError as Error).message}</Text>
-            <CustomButton title="Retry" onPress={() => refetch()} className="mt-4 w-1/2" />
+            <Text className="text-center text-lg text-red-400">
+              {(fetchError as Error).message}
+            </Text>
+            <CustomButton
+              title="Retry"
+              onPress={() => refetch()}
+              className="mt-4 w-1/2"
+            />
           </View>
         ) : activityLog.length === 0 ? (
           <View className="flex-1 items-center justify-center px-4">
-            <Text className="text-lg text-gray-400 text-center">
+            <Text className="text-center text-lg text-gray-400">
               No activities logged for {selectedFilter.toLowerCase()}.
             </Text>
-            <CustomButton title="Reload" onPress={() => refetch()} className="mt-4 w-1/2" />
+            <CustomButton
+              title="Reload"
+              onPress={() => refetch()}
+              className="mt-4 w-1/2"
+            />
           </View>
         ) : (
           <FlatList
@@ -186,7 +251,8 @@ const ActivityLogScreen: React.FC = () => {
             className="px-4"
             contentContainerClassName="pb-20"
             showsVerticalScrollIndicator={false}
-            refreshControl={ // Added for pull-to-refresh
+            refreshControl={
+              // Added for pull-to-refresh
               <RefreshControl
                 refreshing={isRefetchingActivities}
                 onRefresh={refetch}
@@ -210,11 +276,15 @@ const ActivityLogScreen: React.FC = () => {
           isVisible={showAddActivityModal}
           onClose={() => setShowAddActivityModal(false)}
           onSave={handleAddActivity}
+          categories={activityCategories}
+          isLoading={isLoadingCategories}
         />
         <AddExerciseModal
           isVisible={showAddExerciseModal}
           onClose={() => setShowAddExerciseModal(false)}
           onSave={handleAddExercise}
+          exerciseTypes={exerciseTypes}
+          isLoading={isLoadingExerciseTypes}
         />
       </SafeAreaView>
     </LinearGradient>
