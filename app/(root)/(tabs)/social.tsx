@@ -96,14 +96,17 @@ const SocialScreen: React.FC = () => {
     setIsLoading(false);
   }, []);
 
-  useFocusEffect(fetchData);
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [fetchData]),
+  );
 
   const handleAcceptRequest = (id: string) =>
     Alert.alert("Request Accepted", `Accepted friend request from ID: ${id}`);
   const handleRejectRequest = (id: string) =>
     Alert.alert("Request Rejected", `Rejected friend request from ID: ${id}`);
   const handleFriendPress = (friendId: string) => {
-    console.log("View friend:", friendId);
     // Navigate to a friend's profile or the comparison screen
     router.push({
       pathname: "/(root)/friend-comparison",

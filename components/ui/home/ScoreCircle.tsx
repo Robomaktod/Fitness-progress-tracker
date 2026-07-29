@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { View, Platform, Text as RNText, StyleSheet } from "react-native"; // RNText for absolute positioning as an alternative
 import Animated, {
