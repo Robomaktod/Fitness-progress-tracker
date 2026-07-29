@@ -1,3 +1,4 @@
+import { useSignIn } from "@clerk/clerk-expo";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, router } from "expo-router";
 import React, { useCallback } from "react";
@@ -9,7 +10,6 @@ import GradientText from "@/components/shared/GradientText";
 import InputField from "@/components/shared/InputField";
 import OAuth from "@/components/shared/OAuth";
 import { images } from "@/constants";
-import { useSignIn } from "@clerk/clerk-expo";
 
 const SignIn = () => {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -35,7 +35,7 @@ const SignIn = () => {
         Alert.alert("Error", "Log in failed. Please try again.");
       }
     } catch (err: any) {
-      if(err.errors[0].code === "session_exists") {
+      if (err.errors[0].code === "session_exists") {
         return router.replace("/(root)/(tabs)/home");
       }
       console.log(JSON.stringify(err, null, 2));
@@ -75,7 +75,11 @@ const SignIn = () => {
             secureTextEntry
           />
 
-          <CustomButton className="mb-6 mt-10" title={"Log In"} onPress={onSignInPress}/>
+          <CustomButton
+            className="mb-6 mt-10"
+            title={"Log In"}
+            onPress={onSignInPress}
+          />
 
           <View className="mb-6 flex flex-row self-center">
             <Text className="text-[#D0D4DA]">Don't have an account? </Text>
