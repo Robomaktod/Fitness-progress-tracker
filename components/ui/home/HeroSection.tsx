@@ -1,27 +1,16 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import React, { useState } from "react";
 import { View, Text } from "react-native";
 
-import CustomButton from "@/components/shared/CustomButton"; // Your CustomButton
-import GradientText from "@/components/shared/GradientText"; // Your GradientText
-
-// eslint-disable-next-line import/no-unresolved
+import AddFoodModal from "@/app/(root)/add-food";
+import CustomButton from "@/components/shared/CustomButton";
+import GradientText from "@/components/shared/GradientText";
 import ScoreCircle from "@/components/ui/home/ScoreCircle";
 
-// Assuming you might want specific gradients for this section from your constants
-// If not, you can use 'default' or define inline
-// For example, if you add 'heroBackground' or 'healthScoreText' to your constants.gradients
-
 const HeroSection: React.FC = () => {
-  const userName = "Alex"; // This would typically come from auth state/context
   const todayScore = 100;
   const todayMaxScore = 100;
-
-  const handleStartWorkout = () => {
-    console.log("Start Today's Workout pressed");
-    // Navigate to workout screen or start workout flow
-    // Example: router.push('/start-workout');
-  };
+  const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
 
   return (
     <View className="px-4 pb-6 pt-5">
@@ -52,18 +41,24 @@ const HeroSection: React.FC = () => {
             </GradientText>
             <CustomButton
               title="Add food"
-              onPress={handleStartWorkout}
-              bgVariant="default" // Use 'default' or a specific variant like 'primaryAction' from your gradients
-              textVariant="default" // As per your CustomButton, 'default' is likely white text
-              className="w-full" // Ensure it takes full width if needed
-              gradientStyles="py-3" // Padding inside the gradient, adjust as needed
-              accessibilityLabel="Start Today's Workout session"
+              onPress={() => setIsAddFoodModalVisible(true)}
+              bgVariant="default"
+              textVariant="default"
+              className="w-full"
+              gradientStyles="py-3"
+              accessibilityLabel="Add food"
             />
           </View>
         </View>
-
-        {/* Action Button */}
       </LinearGradient>
+      {isAddFoodModalVisible && (
+        <AddFoodModal
+          isVisible={isAddFoodModalVisible}
+          onClose={() => setIsAddFoodModalVisible(false)}
+          onSaveFood={() => setIsAddFoodModalVisible(false)}
+          targetMealName={null}
+        />
+      )}
     </View>
   );
 };

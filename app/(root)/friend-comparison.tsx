@@ -1,3 +1,4 @@
+import { useAuth } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -18,10 +19,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import {
+  useFriendDetails,
+  useFriendComparison,
+} from "@/api/useFriendComparison";
 import ComparisonStatChart from "@/components/ui/social/ComparisonStatChart";
 import { ComparisonStat } from "@/types/social";
-import { useAuth } from "@clerk/clerk-expo";
-import { useFriendDetails, useFriendComparison } from "@/api/useFriendComparison";
 
 const screenBackgroundGradient: readonly [string, string, string] = [
   "#1F2937",
