@@ -1,16 +1,17 @@
+import { useAuth } from "@clerk/clerk-expo";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
 import React from "react";
 import { View, Text, Pressable, FlatList } from "react-native";
 
+import { useAllNutritionLogs } from "@/api/useNutritionQueries";
 import {
   FoodLogItemData,
   FoodLogMealSectionData,
   MealName,
 } from "@/types/health";
-import { BlurView } from 'expo-blur';
+
 import FoodListItem from "./FoodListItem";
-import { useAllNutritionLogs } from "@/api/UseNutritionQueries";
-import { useAuth } from "@clerk/clerk-expo";
 
 interface MealSectionCardProps {
   mealSection: FoodLogMealSectionData;
@@ -29,25 +30,29 @@ const MealSectionCard: React.FC<MealSectionCardProps> = ({
     mealSection.iconProvider === "Ionicons" ? Ionicons : FontAwesome5;
 
   const { userId } = useAuth();
-  const { data: logs, isLoading, isError } = useAllNutritionLogs(userId ?? "Error", date);
+  const {
+    data: logs,
+    isLoading,
+    isError,
+  } = useAllNutritionLogs(userId ?? "", date);
 
   const filteredLogs = (logs || []).filter(
-    (log: any) => log.mealType === mealSection.mealName
+    (log: any) => log.mealType === mealSection.mealName,
   );
 
   const foodItems = filteredLogs.map((log: any) => ({
     id: String(log.nutritionLogId),
-    name: log.food?.name || 'Unknown',
-    calories: log.food?.calories || '0',
+    name: log.food?.name || "Unknown",
+    calories: log.food?.calories || "0",
     macros: {
-      protein: log.food?.proteinG || '0',
-      fat: log.food?.fatG || '0',
-      carbs: log.food?.carbsG || '0',
+      protein: log.food?.proteinG || "0",
+      fat: log.food?.fatG || "0",
+      carbs: log.food?.carbsG || "0",
     },
     iconProvider: "FontAwesome5" as const,
-    iconName: 'utensils', 
-    iconColorClassName: 'text-yellow-400', 
-    iconBgClassName: 'bg-yellow-900', 
+    iconName: "utensils",
+    iconColorClassName: "text-yellow-400",
+    iconBgClassName: "bg-yellow-900",
     originalLog: log,
   }));
 
@@ -72,7 +77,7 @@ const MealSectionCard: React.FC<MealSectionCardProps> = ({
               className={mealSection.iconColorClassName}
               color="#E2DFD2"
             />
-            <Text className="text-lg font-semibold text-gray-200 mx-2">
+            <Text className="mx-2 text-lg font-semibold text-gray-200">
               {mealSection.mealName}
             </Text>
           </View>
@@ -87,9 +92,13 @@ const MealSectionCard: React.FC<MealSectionCardProps> = ({
       </View>
       <View className="p-2">
         {isLoading ? (
-          <Text className="py-4 text-center text-sm text-gray-500">Loading...</Text>
+          <Text className="py-4 text-center text-sm text-gray-500">
+            Loading...
+          </Text>
         ) : isError ? (
-          <Text className="py-4 text-center text-sm text-red-500">Error loading logs.</Text>
+          <Text className="py-4 text-center text-sm text-red-500">
+            Error loading logs.
+          </Text>
         ) : (
           <FlatList
             data={foodItems}

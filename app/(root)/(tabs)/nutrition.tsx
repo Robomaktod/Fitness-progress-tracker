@@ -1,7 +1,8 @@
+import { useAuth } from "@clerk/clerk-expo";
+import { format, addDays, subDays, isValid as isValidDate } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { format, addDays, subDays, isValid as isValidDate } from 'date-fns';
 import {
   FlatList,
   View,
@@ -13,15 +14,18 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useAllFood } from "@/api/useFoodQueries";
+import { useAllNutritionLogs } from "@/api/useNutritionQueries";
 import AddFoodModal from "@/app/(root)/add-food";
+import CustomButton from "@/components/shared/CustomButton";
 import DateNavigator from "@/components/ui/nutrition/DateNavigator";
 import MealSectionCard from "@/components/ui/nutrition/MealSectionCard";
 import NutritionLogHeader from "@/components/ui/nutrition/NutritionLogHeader";
-import CustomButton from "@/components/shared/CustomButton";
-import { FoodLogMealSectionData, MealName, FoodLogItemData } from "@/types/health";
-import { useAllFood } from "@/api/useFoodQueries";
-import { useAuth } from "@clerk/clerk-expo";
-import { useAllNutritionLogs } from "@/api/UseNutritionQueries";
+import {
+  FoodLogMealSectionData,
+  MealName,
+  FoodLogItemData,
+} from "@/types/health";
 
 const screenBackgroundGradient: readonly [string, string, string] = [
   "#111827",
@@ -42,10 +46,15 @@ const NutritionLogScreen: React.FC = () => {
   };
 
   const handleFoodItemPress = (foodItem: FoodLogItemData) => {
-    Alert.alert("Edit Food (TBD)", `Editing ${foodItem.name}. Backend integration needed.`);
+    Alert.alert(
+      "Edit Food (TBD)",
+      `Editing ${foodItem.name}. Backend integration needed.`,
+    );
   };
 
-  const formattedDisplayDate = isValidDate(currentDate) ? format(currentDate, 'MMMM d, yyyy') : "Invalid Date";
+  const formattedDisplayDate = isValidDate(currentDate)
+    ? format(currentDate, "MMMM d, yyyy")
+    : "Invalid Date";
   const handleDateChange = (newDate: Date) => {
     if (isValidDate(newDate)) setCurrentDate(newDate);
   };
@@ -67,7 +76,7 @@ const NutritionLogScreen: React.FC = () => {
     refetch: refetchLogs,
     isRefetching: isRefetchingLogs,
     error: fetchLogsErrorMessage,
-  } = useAllNutritionLogs(userId ?? "Error", currentDate);
+  } = useAllNutritionLogs(userId ?? "", currentDate);
 
   useEffect(() => {
     refetchLogs();
@@ -75,20 +84,30 @@ const NutritionLogScreen: React.FC = () => {
 
   const mealNames: MealName[] = ["Breakfast", "Lunch", "Dinner", "Snack"];
   const mealSections: FoodLogMealSectionData[] = mealNames.map((mealName) => {
-    const foodItems = allFoods.filter((item: any) => item.mealName === mealName);
+    const foodItems = allFoods.filter(
+      (item: any) => item.mealName === mealName,
+    );
     const totalCalories = foodItems.reduce((sum: number, item: any) => {
       const cal = parseInt(item.calories);
       return sum + (isNaN(cal) ? 0 : cal);
     }, 0);
     // Use a valid FontAwesome5 icon name as fallback
-    const fallbackIcon = mealName === 'Breakfast' ? 'egg' : mealName === 'Lunch' ? 'hamburger' : mealName === 'Dinner' ? 'utensils' : 'cookie';
+    const fallbackIcon =
+      mealName === "Breakfast"
+        ? "egg"
+        : mealName === "Lunch"
+          ? "hamburger"
+          : mealName === "Dinner"
+            ? "utensils"
+            : "cookie";
     return {
       mealName,
       totalCalories: totalCalories ? `${totalCalories} cal` : "0 cal",
       iconName: foodItems[0]?.iconName || fallbackIcon,
       iconProvider: foodItems[0]?.iconProvider || "FontAwesome5",
       iconColorClassName: foodItems[0]?.iconColorClassName || "text-cyan-400",
-      borderColorClassName: foodItems[0]?.borderColorClassName || "border-cyan-500/30",
+      borderColorClassName:
+        foodItems[0]?.borderColorClassName || "border-cyan-500/30",
       shadowColor: foodItems[0]?.shadowColor,
       foodItems: foodItems.length ? foodItems : [],
     };
@@ -103,7 +122,10 @@ const NutritionLogScreen: React.FC = () => {
   return (
     <LinearGradient colors={screenBackgroundGradient} className="flex-1">
       <SafeAreaView edges={["top"]} className="flex-1">
-        <StatusBar barStyle="light-content" backgroundColor={screenBackgroundGradient[0]} />
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor={screenBackgroundGradient[0]}
+        />
         <NutritionLogHeader />
         <DateNavigator
           currentDate={formattedDisplayDate}
@@ -119,8 +141,16 @@ const NutritionLogScreen: React.FC = () => {
           </View>
         ) : fetchFoodLogError ? (
           <View className="flex-1 items-center justify-center px-4">
-            <Text className="text-lg text-red-400 text-center">{typeof fetchFoodLogError === 'string' ? fetchFoodLogError : 'Failed to load food log.'}</Text>
-            <CustomButton title="Retry" onPress={() => refetchFoodLog()} className="mt-4 w-1/2" />
+            <Text className="text-center text-lg text-red-400">
+              {typeof fetchFoodLogError === "string"
+                ? fetchFoodLogError
+                : "Failed to load food log."}
+            </Text>
+            <CustomButton
+              title="Retry"
+              onPress={() => refetchFoodLog()}
+              className="mt-4 w-1/2"
+            />
           </View>
         ) : (
           // Use FlatList instead of ScrollView to avoid nested VirtualizedLists
@@ -164,4 +194,3 @@ const NutritionLogScreen: React.FC = () => {
 };
 
 export default NutritionLogScreen;
-

@@ -1,25 +1,19 @@
+import { useAuth } from "@clerk/clerk-expo";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Alert,
-  Pressable,
-} from "react-native";
+import { View, Text, ScrollView, Alert, Pressable } from "react-native";
 import Modal from "react-native-modal";
-import { useAuth } from "@clerk/clerk-expo";
 
-import CustomButton from "@/components/shared/CustomButton";
-import InputField from "@/components/shared/InputField";
-import MealTimeSelector from "@/components/ui/nutrition/MealTimeSelector";
-import { MealName } from "@/types/health";
 import { useFoodByName } from "@/api/useFoodQueries";
-import Header from "@/components/ui/add-food/Header";
-import { useCreateNutritionLog } from "@/api/UseNutritionQueries";
-import { MEAL_TIME_OPTIONS } from "@/constants";
+import { useCreateNutritionLog } from "@/api/useNutritionQueries";
+import CustomButton from "@/components/shared/CustomButton";
 import Divider from "@/components/shared/Divider";
+import InputField from "@/components/shared/InputField";
+import Header from "@/components/ui/add-food/Header";
+import MealTimeSelector from "@/components/ui/nutrition/MealTimeSelector";
+import { MEAL_TIME_OPTIONS } from "@/constants";
+import { MealName } from "@/types/health";
 
 const modalBackgroundGradient: readonly [string, string, string] = [
   "#18132F",
@@ -76,7 +70,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
 
   const searchResults = Array.isArray(searchResultsRaw)
     ? searchResultsRaw.filter(Boolean)
-    : searchResultsRaw && typeof searchResultsRaw === 'object'
+    : searchResultsRaw && typeof searchResultsRaw === "object"
       ? Object.values(searchResultsRaw).filter(Boolean)
       : [];
 
@@ -159,24 +153,26 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
               />
 
               {searchTerm.length > 0 && searchTouched && (
-                <ScrollView style={{
-                  position: 'absolute',
-                  left: 0,
-                  right: 0,
-                  top: 56,
-                  zIndex: 100,
-                  backgroundColor: '#18132F',
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: '#a78bfa', 
-                  maxHeight: 540, 
-                  overflow: 'scroll',
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 4,
-                  elevation: 10,
-                }}>
+                <ScrollView
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    top: 56,
+                    zIndex: 100,
+                    backgroundColor: "#18132F",
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: "#a78bfa",
+                    maxHeight: 540,
+                    overflow: "scroll",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 4,
+                    elevation: 10,
+                  }}
+                >
                   {isSearching ? (
                     <Text className="p-4 text-center text-gray-400">
                       Searching...
@@ -193,7 +189,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                     searchResults.slice(0, 10).map((item: any, idx: number) => (
                       <Pressable
                         key={item.foodId || item.id || idx}
-                        className="p-3 border-b border-gray-700"
+                        className="border-b border-gray-700 p-3"
                         onPress={() => {
                           setFoodData((prev: any) => ({
                             ...prev,
@@ -208,7 +204,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                           setSearchTouched(false);
                         }}
                       >
-                        <Text className="text-white font-medium">
+                        <Text className="font-medium text-white">
                           {item.product_name}
                         </Text>
                         <Text className="text-xs text-gray-400">
@@ -217,7 +213,9 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                             : "No kcal info"}
                         </Text>
                         <Text className="text-xs text-gray-400">
-                          P: {item.proteins_100g ?? "-"}g | C: {item.carbohydrates_100g ?? "-"}g | F: {item.fat_100g ?? "-"}g
+                          P: {item.proteins_100g ?? "-"}g | C:{" "}
+                          {item.carbohydrates_100g ?? "-"}g | F:{" "}
+                          {item.fat_100g ?? "-"}g
                         </Text>
                       </Pressable>
                     ))
@@ -225,7 +223,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                 </ScrollView>
               )}
             </View>
-              <Divider />
+            <Divider />
             <InputField
               label="Food Name"
               value={foodData.foodName}
@@ -238,7 +236,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
             />
 
             <View className="mb-4 flex-row justify-between space-x-3">
-              <View className="flex-1 mx-1">
+              <View className="mx-1 flex-1">
                 <InputField
                   label="Calories"
                   value={foodData.calories}
@@ -250,16 +248,16 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                   keyboardType="numeric"
                 />
               </View>
-              <View className="flex-1 mx-1">
-               <InputField
-              label="Weight (g)"
-              value={weight}
-              onChangeText={setWeight}
-              placeholder="e.g., 150"
-              placeholderTextColor="#9AA6B2"
-              keyboardType="numeric"
-              className="mb-4"
-            />
+              <View className="mx-1 flex-1">
+                <InputField
+                  label="Weight (g)"
+                  value={weight}
+                  onChangeText={setWeight}
+                  placeholder="e.g., 150"
+                  placeholderTextColor="#9AA6B2"
+                  keyboardType="numeric"
+                  className="mb-4"
+                />
               </View>
             </View>
 
@@ -267,7 +265,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
               Macronutrients
             </Text>
             <View className="mb-4 flex-row justify-between space-x-3 *:mx-4 *:bg-slate-50">
-              <View className="flex-1 mx-1">
+              <View className="mx-1 flex-1">
                 <InputField
                   value={foodData.protein}
                   onChangeText={(text) =>
@@ -279,7 +277,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                   inputStyle="text-center"
                 />
               </View>
-              <View className="flex-1 mx-1">
+              <View className="mx-1 flex-1">
                 <InputField
                   value={foodData.carbs}
                   onChangeText={(text) =>
@@ -291,7 +289,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                   inputStyle="text-center"
                 />
               </View>
-              <View className="flex-1 mx-1">
+              <View className="mx-1 flex-1">
                 <InputField
                   value={foodData.fat}
                   onChangeText={(text) =>
@@ -321,14 +319,17 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                   : "Add Food Entry"
               }
               onPress={() => {
-                if (!foodData.foodName || !foodData.calories || !selectedMealTime) {
+                if (
+                  !foodData.foodName ||
+                  !foodData.calories ||
+                  !selectedMealTime
+                ) {
                   Alert.alert(
                     "Missing Fields",
                     "Please fill in food name, calories, and select a meal time.",
                   );
                   return;
                 }
-                {console.log(foodData.foodId)}
                 addNutritionMutation.mutate(
                   {
                     userId: userId,
@@ -354,7 +355,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                 );
               }}
               bgVariant="default"
-              className="mt-8 mb-28"
+              className="mb-28 mt-8"
             />
           </ScrollView>
         </View>
