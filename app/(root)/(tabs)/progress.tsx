@@ -1,19 +1,30 @@
+import { useAuth } from "@clerk/clerk-expo";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter, useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
-import { ScrollView, View, StatusBar, Text, Modal, Pressable, TextInput, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  ScrollView,
+  View,
+  StatusBar,
+  Text,
+  Modal,
+  Pressable,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ActivityTrendsCard from "@/components/ui/progress/ActivityTrendsCard";
-import CalorieTrendsCard from "@/components/ui/progress/CalorieTrendsCard";
-import ProgressHeader from "@/components/ui/progress/ProgressHeader";
-import WeightProgressCard from "@/components/ui/progress/WeightProgressCard";
-import { useAuth } from "@clerk/clerk-expo";
+
 import {
   useWeightProgress,
   useActivityTrends,
   useCalorieTrends,
   useAddWeight,
 } from "@/api/useProgressQueries";
+import ActivityTrendsCard from "@/components/ui/progress/ActivityTrendsCard";
+import CalorieTrendsCard from "@/components/ui/progress/CalorieTrendsCard";
+import ProgressHeader from "@/components/ui/progress/ProgressHeader";
+import WeightProgressCard from "@/components/ui/progress/WeightProgressCard";
 import {
   WeightProgressData,
   ActivityTrendsData,
@@ -63,15 +74,18 @@ const ProgressScreen: React.FC = () => {
       setAddWeightError(error?.message || "Failed to add weight. Try again.");
     },
   });
-  const isAddingWeight = typeof isPending !== 'undefined' ? isPending : false;
+  const isAddingWeight = typeof isPending !== "undefined" ? isPending : false;
 
   // Show info popup if duplicate date detected in weightData
   React.useEffect(() => {
     if (weightData && weightData.history) {
-      const dateCounts = weightData.history.reduce((acc: Record<string, number>, entry: { date: string }) => {
-        acc[entry.date] = (acc[entry.date] || 0) + 1;
-        return acc;
-      }, {});
+      const dateCounts = weightData.history.reduce(
+        (acc: Record<string, number>, entry: { date: string }) => {
+          acc[entry.date] = (acc[entry.date] || 0) + 1;
+          return acc;
+        },
+        {},
+      );
       if (Object.values(dateCounts).some((count) => (count as number) > 1)) {
         setShowWeightInfo(true);
       }
@@ -157,17 +171,18 @@ const ProgressScreen: React.FC = () => {
         >
           <View className="flex-1 items-center justify-center bg-black/60 px-8">
             <View className="rounded-2xl bg-dark-200 p-6 shadow-lg">
-              <Text className="mb-3 text-lg font-bold text-purple-400 text-center">
+              <Text className="mb-3 text-center text-lg font-bold text-purple-400">
                 Weight Already Entered Today
               </Text>
-              <Text className="mb-4 text-base text-gray-200 text-center">
-                You have already entered your weight for today. You can only add one weight entry per day.
+              <Text className="mb-4 text-center text-base text-gray-200">
+                You have already entered your weight for today. You can only add
+                one weight entry per day.
               </Text>
               <Pressable
                 onPress={() => setShowWeightInfo(false)}
                 className="mt-2 rounded-lg bg-purple-500/80 px-6 py-2"
               >
-                <Text className="text-center text-white font-semibold">OK</Text>
+                <Text className="text-center font-semibold text-white">OK</Text>
               </Pressable>
             </View>
           </View>
@@ -180,25 +195,29 @@ const ProgressScreen: React.FC = () => {
           onRequestClose={() => setShowAddWeightModal(false)}
         >
           <View className="flex-1 items-center justify-center bg-black/60 px-8">
-            <View className="rounded-2xl bg-dark-200 p-6 shadow-lg w-full max-w-md">
-              <Text className="mb-3 text-lg font-bold text-purple-400 text-center">
+            <View className="w-full max-w-md rounded-2xl bg-dark-200 p-6 shadow-lg">
+              <Text className="mb-3 text-center text-lg font-bold text-purple-400">
                 Add New Weight
               </Text>
-              <Text className="mb-2 text-base text-gray-200 text-center">
+              <Text className="mb-2 text-center text-base text-gray-200">
                 Enter your current weight:
               </Text>
-              <View className="flex-row items-center justify-center mb-4">
+              <View className="mb-4 flex-row items-center justify-center">
                 <TextInput
                   value={newWeight}
                   onChangeText={setNewWeight}
                   placeholder="e.g. 70.5"
                   keyboardType="decimal-pad"
-                  className="bg-dark-100 text-white px-4 py-2 rounded-lg w-32 text-center"
+                  className="w-32 rounded-lg bg-dark-100 px-4 py-2 text-center text-white"
                 />
-                <Text className="ml-2 text-gray-300">{weightData?.weightUnit || "kg"}</Text>
+                <Text className="ml-2 text-gray-300">
+                  {weightData?.weightUnit || "kg"}
+                </Text>
               </View>
               {addWeightError && (
-                <Text className="text-red-400 text-center mb-2">{addWeightError}</Text>
+                <Text className="mb-2 text-center text-red-400">
+                  {addWeightError}
+                </Text>
               )}
               <View className="flex-row justify-center space-x-4">
                 <Pressable
@@ -206,7 +225,9 @@ const ProgressScreen: React.FC = () => {
                   className="rounded-lg bg-gray-500/80 px-6 py-2"
                   disabled={isAddingWeight}
                 >
-                  <Text className="text-center text-white font-semibold">Cancel</Text>
+                  <Text className="text-center font-semibold text-white">
+                    Cancel
+                  </Text>
                 </Pressable>
                 <Pressable
                   onPress={() => {
@@ -217,7 +238,9 @@ const ProgressScreen: React.FC = () => {
                     }
                     // Restrict to one entry per day
                     const today = new Date().toISOString().slice(0, 10);
-                    const alreadyEnteredToday = weightData?.history?.some((entry: any) => entry.date === today);
+                    const alreadyEnteredToday = weightData?.history?.some(
+                      (entry: any) => entry.date === today,
+                    );
                     if (alreadyEnteredToday) {
                       setShowAddWeightModal(false);
                       setShowWeightInfo(true);
@@ -228,7 +251,7 @@ const ProgressScreen: React.FC = () => {
                   className="rounded-lg bg-purple-500/80 px-6 py-2"
                   disabled={isAddingWeight}
                 >
-                  <Text className="text-center text-white font-semibold">
+                  <Text className="text-center font-semibold text-white">
                     {isAddingWeight ? "Adding..." : "Add"}
                   </Text>
                 </Pressable>
