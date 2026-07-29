@@ -1,8 +1,8 @@
-import { View, Text, Pressable } from 'react-native'
-import React from 'react'
-import { FoodLogItemData } from '@/types';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { View, Text, Pressable } from "react-native";
 
+import { FoodLogItemData } from "@/types/health";
 
 interface FoodListItemProps {
   item: FoodLogItemData;
@@ -37,13 +37,15 @@ const FoodListItem: React.FC<FoodListItemProps> = ({ item, onItemPress }) => {
             {item.calories}
           </Text>
         </View>
-        <View className="flex-row ">
-          <Text className="text-xs text-gray-100">P: {item.macros.protein}    F: {item.macros.fat}    C: {item.macros.carbs} </Text>
+        <View className="flex-row">
+          <Text className="text-xs text-gray-100">
+            P: {item.macros.protein} F: {item.macros.fat} C:{" "}
+            {item.macros.carbs}{" "}
+          </Text>
         </View>
       </View>
     </Pressable>
   );
 };
 
-
-export default FoodListItem
+export default FoodListItem;

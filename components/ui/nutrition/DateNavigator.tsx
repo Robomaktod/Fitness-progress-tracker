@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { View, Text, Pressable, Modal } from "react-native";
-import CalendarPicker from 'react-native-calendar-picker';
+import CalendarPicker from "react-native-calendar-picker";
 
 interface DateNavigatorProps {
   currentDate: string;
@@ -58,7 +58,9 @@ const DateNavigator: React.FC<DateNavigatorProps> = ({
             color="#E2DFD2" // text-indigo-400 was in original
             className="mr-1" // Adjusted margin slightly
           />
-          <Text className="text-sm font-medium text-gray-200">{currentDate}</Text>
+          <Text className="text-sm font-medium text-gray-200">
+            {currentDate}
+          </Text>
         </Pressable>
 
         <Pressable
@@ -80,10 +82,13 @@ const DateNavigator: React.FC<DateNavigatorProps> = ({
         onRequestClose={handleCloseCalendar}
         animationType="fade"
       >
-        <Pressable onPress={handleCloseCalendar} className="flex-1 justify-center items-center bg-black/60">
+        <Pressable
+          onPress={handleCloseCalendar}
+          className="flex-1 items-center justify-center bg-black/60"
+        >
           <Pressable
             onPress={(e) => e.stopPropagation()} // Prevent modal close when clicking inside calendar
-            className="bg-slate-800 rounded-xl p-5 shadow-2xl w-11/12 max-w-md"
+            className="w-11/12 max-w-md rounded-xl bg-slate-800 p-5 shadow-2xl"
           >
             <CalendarPicker
               startFromMonday={true}
@@ -93,35 +98,44 @@ const DateNavigator: React.FC<DateNavigatorProps> = ({
               width={300} // Adjust width as needed, or make responsive
               height={320} // Adjust height as needed
               textStyle={{
-                color: '#E2DFD2', // Light text for dates (off-white)
-                fontFamily: 'System', // Specify font if default is not desired
+                color: "#E2DFD2", // Light text for dates (off-white)
+                fontFamily: "System", // Specify font if default is not desired
               }}
               selectedDayStyle={{
-                backgroundColor: '#6366F1', // Indigo color for selected day
+                backgroundColor: "#6366F1", // Indigo color for selected day
               }}
               selectedDayTextStyle={{
-                color: '#FFFFFF', // White text for selected day
-                fontWeight: 'bold',
+                color: "#FFFFFF", // White text for selected day
+                fontWeight: "bold",
               }}
               todayBackgroundColor="#4A5568" // A darker gray for today's background (bg-gray-600)
               todayTextStyle={{
-                color: '#E2DFD2', // Light text for today
-                fontWeight: 'bold',
+                color: "#E2DFD2", // Light text for today
+                fontWeight: "bold",
               }}
               previousTitle="Prev"
               nextTitle="Next"
-              previousTitleStyle={{ color: '#A5B4FC', fontWeight: 'bold' }} // Indigo-300
-              nextTitleStyle={{ color: '#A5B4FC', fontWeight: 'bold' }} // Indigo-300
-              monthTitleStyle={{ color: '#E2DFD2', fontWeight: 'bold', fontSize: 16, marginBottom: 10 }}
-              yearTitleStyle={{ color: '#E2DFD2', fontWeight: 'bold', fontSize: 16 }}
+              previousTitleStyle={{ color: "#A5B4FC", fontWeight: "bold" }} // Indigo-300
+              nextTitleStyle={{ color: "#A5B4FC", fontWeight: "bold" }} // Indigo-300
+              monthTitleStyle={{
+                color: "#E2DFD2",
+                fontWeight: "bold",
+                fontSize: 16,
+                marginBottom: 10,
+              }}
+              yearTitleStyle={{
+                color: "#E2DFD2",
+                fontWeight: "bold",
+                fontSize: 16,
+              }}
               dayShape="circle" // or "square"
               // Custom day header styling
               customDayHeaderStyles={() => {
                 return {
                   textStyle: {
-                    color: '#A0AEC0', // gray-500
-                    fontWeight: 'bold',
-                  }
+                    color: "#A0AEC0", // gray-500
+                    fontWeight: "bold",
+                  },
                 };
               }}
               // You can further customize arrow components if needed
@@ -129,9 +143,11 @@ const DateNavigator: React.FC<DateNavigatorProps> = ({
             />
             <Pressable
               onPress={handleCloseCalendar}
-              className="mt-4 bg-indigo-500 active:bg-indigo-600 py-2.5 px-4 rounded-lg self-center"
+              className="mt-4 self-center rounded-lg bg-indigo-500 px-4 py-2.5 active:bg-indigo-600"
             >
-              <Text className="text-white font-semibold text-center">Close</Text>
+              <Text className="text-center font-semibold text-white">
+                Close
+              </Text>
             </Pressable>
           </Pressable>
         </Pressable>

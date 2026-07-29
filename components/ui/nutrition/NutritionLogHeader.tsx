@@ -3,7 +3,7 @@ import { View } from "react-native";
 
 import GradientText from "@/components/shared/GradientText";
 
-const foodLogTitleGradient: [string, string] = ["#22D3EE", "#3B82F6"]; 
+const foodLogTitleGradient: [string, string] = ["#22D3EE", "#3B82F6"];
 
 const NutritionLogHeader = () => {
   return (
