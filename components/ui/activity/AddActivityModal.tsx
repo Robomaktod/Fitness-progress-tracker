@@ -1,16 +1,34 @@
 import React, { useState } from "react";
-import { Modal, View, Text, TextInput, Pressable, FlatList } from "react-native";
-import { useActivityCategories } from "@/api/useActivityLogs";
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  FlatList,
+} from "react-native";
+
+import { ActivityCategory } from "@/api/useActivityTypes";
 
 interface AddActivityModalProps {
   isVisible: boolean;
   onClose: () => void;
-  onSave: (activity: { categoryId: string; duration: string; date: string }) => void;
+  onSave: (activity: {
+    categoryId: string;
+    duration: string;
+    date: string;
+  }) => void;
+  categories: ActivityCategory[];
+  isLoading?: boolean;
 }
 
-const AddActivityModal: React.FC<AddActivityModalProps> = ({ isVisible, onClose, onSave }) => {
-  const { data, isLoading } = useActivityCategories();
-  const categories = Array.isArray(data) ? data : [];
+const AddActivityModal: React.FC<AddActivityModalProps> = ({
+  isVisible,
+  onClose,
+  onSave,
+  categories,
+  isLoading = false,
+}) => {
   const [categoryId, setCategoryId] = useState("");
   const [duration, setDuration] = useState("");
   const [date, setDate] = useState("");
@@ -30,54 +48,82 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isVisible, onClose,
   };
 
   return (
-    <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal
+      visible={isVisible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
       <View className="flex-1 items-center justify-center bg-black/60 px-8">
-        <View className="rounded-2xl bg-dark-200 p-6 shadow-lg w-full max-w-md">
-          <Text className="mb-3 text-lg font-bold text-purple-400 text-center">Add Activity</Text>
+        <View className="w-full max-w-md rounded-2xl bg-dark-200 p-6 shadow-lg">
+          <Text className="mb-3 text-center text-lg font-bold text-purple-400">
+            Add Activity
+          </Text>
           <View className="mb-2">
-            <Text className="text-white mb-1">Activity Category</Text>
+            <Text className="mb-1 text-white">Activity Category</Text>
             <Pressable
-              onPress={() => !isLoading && categories.length > 0 && setShowCategoryModal(true)}
-              className="bg-dark-100 px-4 py-2 rounded-lg mb-2"
+              onPress={() =>
+                !isLoading &&
+                categories.length > 0 &&
+                setShowCategoryModal(true)
+              }
+              className="mb-2 rounded-lg bg-dark-100 px-4 py-2"
               disabled={isLoading || categories.length === 0}
             >
               <Text className={categoryId ? "text-white" : "text-gray-400"}>
                 {isLoading
-                  ? 'Loading...'
+                  ? "Loading..."
                   : !Array.isArray(categories) || categories.length === 0
-                    ? 'No categories available'
+                    ? "No categories available"
                     : categoryId
-                      ? categories.find((cat: any) => cat.id === categoryId)?.name || 'Select Category'
-                      : 'Select Category'}
+                      ? categories.find((cat) => cat.id === categoryId)?.name ||
+                        "Select Category"
+                      : "Select Category"}
               </Text>
             </Pressable>
             {/* Category selection modal */}
-            <Modal visible={showCategoryModal} transparent animationType="fade" onRequestClose={() => setShowCategoryModal(false)}>
+            <Modal
+              visible={showCategoryModal}
+              transparent
+              animationType="fade"
+              onRequestClose={() => setShowCategoryModal(false)}
+            >
               <View className="flex-1 items-center justify-center bg-black/60 px-8">
-                <View className="rounded-2xl bg-dark-200 p-4 w-full max-w-md">
-                  <Text className="mb-3 text-lg font-bold text-purple-400 text-center">Select Category</Text>
+                <View className="w-full max-w-md rounded-2xl bg-dark-200 p-4">
+                  <Text className="mb-3 text-center text-lg font-bold text-purple-400">
+                    Select Category
+                  </Text>
                   {Array.isArray(categories) && categories.length > 0 ? (
                     <FlatList
                       data={categories}
-                      keyExtractor={item => item.id}
+                      keyExtractor={(item) => item.id}
                       renderItem={({ item }) => (
                         <Pressable
                           onPress={() => {
                             setCategoryId(item.id);
                             setShowCategoryModal(false);
                           }}
-                          className="px-4 py-3 border-b border-gray-700"
+                          className="border-b border-gray-700 px-4 py-3"
                         >
-                          <Text className="text-white text-base">{item.name}</Text>
+                          <Text className="text-base text-white">
+                            {item.name}
+                          </Text>
                         </Pressable>
                       )}
                       style={{ maxHeight: 300 }}
                     />
                   ) : (
-                    <Text className="text-gray-400 text-center py-4">No categories available</Text>
+                    <Text className="py-4 text-center text-gray-400">
+                      No categories available
+                    </Text>
                   )}
-                  <Pressable onPress={() => setShowCategoryModal(false)} className="mt-4 rounded-lg bg-gray-500/80 px-6 py-2">
-                    <Text className="text-center text-white font-semibold">Cancel</Text>
+                  <Pressable
+                    onPress={() => setShowCategoryModal(false)}
+                    className="mt-4 rounded-lg bg-gray-500/80 px-6 py-2"
+                  >
+                    <Text className="text-center font-semibold text-white">
+                      Cancel
+                    </Text>
                   </Pressable>
                 </View>
               </View>
@@ -88,23 +134,33 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({ isVisible, onClose,
             onChangeText={setDuration}
             placeholder="Duration (min)"
             keyboardType="numeric"
-            className="bg-dark-100 text-white px-4 py-2 rounded-lg mb-2"
+            className="mb-2 rounded-lg bg-dark-100 px-4 py-2 text-white"
             placeholderTextColor="#aaa"
           />
           <TextInput
             value={date}
             onChangeText={setDate}
             placeholder="Date (YYYY-MM-DD)"
-            className="bg-dark-100 text-white px-4 py-2 rounded-lg mb-2"
+            className="mb-2 rounded-lg bg-dark-100 px-4 py-2 text-white"
             placeholderTextColor="#aaa"
           />
-          {error ? <Text className="text-red-400 text-center mb-2">{error}</Text> : null}
-          <View className="flex-row justify-center space-x-4 mt-2">
-            <Pressable onPress={onClose} className="rounded-lg bg-gray-500/80 px-6 py-2">
-              <Text className="text-center text-white font-semibold">Cancel</Text>
+          {error ? (
+            <Text className="mb-2 text-center text-red-400">{error}</Text>
+          ) : null}
+          <View className="mt-2 flex-row justify-center space-x-4">
+            <Pressable
+              onPress={onClose}
+              className="rounded-lg bg-gray-500/80 px-6 py-2"
+            >
+              <Text className="text-center font-semibold text-white">
+                Cancel
+              </Text>
             </Pressable>
-            <Pressable onPress={handleSave} className="rounded-lg bg-purple-500/80 px-6 py-2">
-              <Text className="text-center text-white font-semibold">Add</Text>
+            <Pressable
+              onPress={handleSave}
+              className="rounded-lg bg-purple-500/80 px-6 py-2"
+            >
+              <Text className="text-center font-semibold text-white">Add</Text>
             </Pressable>
           </View>
         </View>
