@@ -33,8 +33,10 @@ yarn-error.*
 # local env files
 .env*.local
 .env*
+!.env.example
 
 # typescript
 *.tsbuildinfo
 
 app-example
+CLAUDE.md

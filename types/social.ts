@@ -50,16 +50,3 @@ export interface ComparisonStat {
   userLineColor?: string;
   friendLineColor?: string;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

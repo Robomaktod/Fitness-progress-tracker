@@ -1,7 +1,7 @@
 import { View } from "react-native";
 
 const Divider = () => {
-  return <View className="flex-1 bg-slate-700 h-[2px] my-auto mx-2" />;
+  return <View className="mx-2 my-auto h-[2px] flex-1 bg-slate-700" />;
 };
 
 export default Divider;

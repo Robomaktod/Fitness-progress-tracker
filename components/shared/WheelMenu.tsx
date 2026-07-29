@@ -11,16 +11,16 @@ const WheelMenu = () => {
   // const pathname = usePathname();
 
   return (
-    <View className="absolute bottom-[120px] right-[30px] items-end z-50">
+    <View className="absolute bottom-[120px] right-[30px] z-50 items-end">
       {menuItems.map((item, index) => (
         <Pressable
           key={item.name}
-          className="animate-wiggle flex flex-row"
+          className="flex animate-wiggle flex-row"
           onPress={() => Alert.alert(item.path)}
         >
           <Ionicons name={item.icon} size={24} className="text-[#00f2ea]" />
 
-          <Text className="text-active text-xl">{item.name}</Text>
+          <Text className="text-xl text-active">{item.name}</Text>
         </Pressable>
       ))}
     </View>

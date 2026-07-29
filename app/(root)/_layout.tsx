@@ -2,7 +2,6 @@ import { useFonts } from "expo-font";
 import { Stack, SplashScreen } from "expo-router";
 import React from "react";
 
-
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     "SpaceMono-Regular": require("@/assets/fonts/SpaceMono-Regular.ttf"), // Using path alias
@@ -22,7 +21,7 @@ export default function RootLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: false, 
+        headerShown: false,
       }}
     >
       <Stack.Screen name="(tabs)" />
@@ -36,12 +35,11 @@ export default function RootLayout() {
       <Stack.Screen
         name="search-user"
         options={{
-          headerShown: true, 
+          headerShown: true,
           title: "Find Friends",
           animation: "slide_from_right",
         }}
       />
-
     </Stack>
   );
 }
