@@ -1,9 +1,24 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from './apiClient';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { apiClient } from "./apiClient";
+
+interface NewNutritionLogEntry {
+  userId: string | null | undefined;
+  foodId: string;
+  quantityConsumed: number;
+  mealType: string;
+  loggedAt: string;
+}
+
+interface NutritionLogUpdate {
+  quantityConsumed?: number;
+  mealType?: string;
+  loggedAt?: string;
+}
 
 export function useAllNutritionLogs(userId: string, date?: Date) {
   return useQuery({
-    queryKey: ['nutrition', 'all', userId, date?.toISOString()],
+    queryKey: ["nutrition", "all", userId, date?.toISOString()],
     queryFn: async () => {
       const params = new URLSearchParams({
         userId,
@@ -16,12 +31,10 @@ export function useAllNutritionLogs(userId: string, date?: Date) {
   });
 }
 
-
 export function useCreateNutritionLog() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (food: any) => {
-      console.log("Creating nutrition log with food:", food);
+    mutationFn: async (food: NewNutritionLogEntry) => {
       const { data } = await apiClient.post("/nutrition/create/", food);
       return data;
     },
@@ -40,13 +53,13 @@ export function useUpdateNutritionLog() {
       update,
     }: {
       id: string | number;
-      update: any; // Replace with your NutritionLogUpdateInput type if available
+      update: NutritionLogUpdate;
     }) => {
       const { data } = await apiClient.patch(`/nutrition/${id}`, update);
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['nutrition'] });
+      queryClient.invalidateQueries({ queryKey: ["nutrition"] });
     },
   });
 }
@@ -60,7 +73,7 @@ export function useDeleteNutritionLog() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['nutrition'] });
+      queryClient.invalidateQueries({ queryKey: ["nutrition"] });
     },
   });
 }

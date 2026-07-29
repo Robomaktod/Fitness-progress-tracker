@@ -1,9 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from './apiClient';
+import { useQuery } from "@tanstack/react-query";
+
+import { apiClient } from "./apiClient";
 
 export function useFriendDetails(friendId: string) {
   return useQuery({
-    queryKey: ['friendDetails', friendId],
+    queryKey: ["friendDetails", friendId],
     queryFn: async () => {
       const { data } = await apiClient.get(`/social/friend/${friendId}`);
       return data;
@@ -14,9 +15,11 @@ export function useFriendDetails(friendId: string) {
 
 export function useFriendComparison(userId: string, friendId: string) {
   return useQuery({
-    queryKey: ['friendComparison', userId, friendId],
+    queryKey: ["friendComparison", userId, friendId],
     queryFn: async () => {
-      const { data } = await apiClient.get(`/social/comparison?userId=${userId}&friendId=${friendId}`);
+      const { data } = await apiClient.get(
+        `/social/comparison?userId=${userId}&friendId=${friendId}`,
+      );
       return data;
     },
     enabled: !!userId && !!friendId,

@@ -1,11 +1,24 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from './apiClient';
+import { useQuery } from "@tanstack/react-query";
+
+import { apiClient } from "./apiClient";
+
+export interface ExerciseType {
+  id: string;
+  name: string;
+}
+
+export interface ActivityCategory {
+  id: string;
+  name: string;
+}
 
 export function useExerciseTypes() {
   return useQuery({
-    queryKey: ['exerciseTypes'],
+    queryKey: ["exerciseTypes"],
     queryFn: async () => {
-      const { data } = await apiClient.get('/activity/exercise-types');
+      const { data } = await apiClient.get<ExerciseType[]>(
+        "/activity/exercise-types",
+      );
       return data;
     },
   });
@@ -13,9 +26,11 @@ export function useExerciseTypes() {
 
 export function useActivityCategories() {
   return useQuery({
-    queryKey: ['activityCategories'],
+    queryKey: ["activityCategories"],
     queryFn: async () => {
-      const { data } = await apiClient.get('/activity/activity-categories');
+      const { data } = await apiClient.get<ActivityCategory[]>(
+        "/activity/activity-categories",
+      );
       return data;
     },
   });
