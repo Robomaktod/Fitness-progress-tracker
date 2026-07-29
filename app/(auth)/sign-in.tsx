@@ -10,38 +10,58 @@ import GradientText from "@/components/shared/GradientText";
 import InputField from "@/components/shared/InputField";
 import OAuth from "@/components/shared/OAuth";
 import { images } from "@/constants";
+import { getClerkErrorCode, getClerkErrorMessage } from "@/lib/auth";
 
 const SignIn = () => {
   const { signIn, setActive, isLoaded } = useSignIn();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [form, setForm] = React.useState({
     email: "",
     password: "",
   });
 
   const onSignInPress = useCallback(async () => {
-    if (!isLoaded) return;
+    if (!isLoaded || isSubmitting) return;
+
+    const email = form.email.trim().toLowerCase();
+
+    if (!email || !form.password) {
+      Alert.alert("Missing Details", "Please enter your email and password.");
+      return;
+    }
 
     try {
+      setIsSubmitting(true);
+
       const signInAttempt = await signIn.create({
-        identifier: form.email,
+        identifier: email,
         password: form.password,
       });
 
-      if (signInAttempt.status === "complete") {
+      if (
+        signInAttempt.status === "complete" &&
+        signInAttempt.createdSessionId
+      ) {
         await setActive({ session: signInAttempt.createdSessionId });
         router.replace("/(root)/(tabs)/home");
       } else {
-        console.log(JSON.stringify(signInAttempt, null, 2));
+        console.warn("Incomplete sign-in attempt:", signInAttempt.status);
         Alert.alert("Error", "Log in failed. Please try again.");
       }
-    } catch (err: any) {
-      if (err.errors[0].code === "session_exists") {
+    } catch (err: unknown) {
+      if (getClerkErrorCode(err) === "session_exists") {
         return router.replace("/(root)/(tabs)/home");
       }
-      console.log(JSON.stringify(err, null, 2));
-      Alert.alert("Error", err.errors[0].longMessage);
+
+      console.error("Sign in failed:", err);
+      Alert.alert(
+        "Error",
+        getClerkErrorMessage(err, "Log in failed. Please try again."),
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-  }, [isLoaded, form]);
+  }, [form.email, form.password, isLoaded, isSubmitting, setActive, signIn]);
   return (
     <LinearGradient
       className="flex-1 transition-all duration-300"
@@ -77,8 +97,9 @@ const SignIn = () => {
 
           <CustomButton
             className="mb-6 mt-10"
-            title={"Log In"}
+            title={isSubmitting ? "Logging In..." : "Log In"}
             onPress={onSignInPress}
+            disabled={!isLoaded || isSubmitting}
           />
 
           <View className="mb-6 flex flex-row self-center">
