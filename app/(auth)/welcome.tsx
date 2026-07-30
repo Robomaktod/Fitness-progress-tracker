@@ -55,12 +55,14 @@ const Welcome = () => {
       <View className="mb-4 w-full px-10">
         <CustomButton
           title={isLastSlide ? "Get Started" : "Next"}
-          className="mx-12r"
+          className="self-center"
           onPress={() => {
-            // eslint-disable-next-line no-unused-expressions
-            isLastSlide
-              ? router.replace("/(auth)/sign-up")
-              : swiperRef.current?.scrollBy(1);
+            if (isLastSlide) {
+              router.replace("/(auth)/sign-up");
+              return;
+            }
+
+            swiperRef.current?.scrollBy(1);
           }}
         />
       </View>

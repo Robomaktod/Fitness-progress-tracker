@@ -15,7 +15,7 @@ import HeroSection from "@/components/ui/home/HeroSection";
 const HomeScreen: React.FC = () => {
   return (
     <LinearGradient
-      className="flex-1 transition-all duration-300"
+      className="flex-1"
       colors={["#111827", "#3b0764", "#172554"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}

@@ -64,7 +64,7 @@ const SignIn = () => {
   }, [form.email, form.password, isLoaded, isSubmitting, setActive, signIn]);
   return (
     <LinearGradient
-      className="flex-1 transition-all duration-300"
+      className="flex-1"
       colors={["#111827", "#3b0764", "#172554"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
@@ -76,7 +76,7 @@ const SignIn = () => {
           <GradientText>NeonPulse Fit</GradientText>
         </View>
 
-        <View className="mx-8 flex-1 rounded-xl border border-purple-500/20 bg-black/30 p-10 backdrop-blur-sm">
+        <View className="mx-6 flex-1 rounded-xl border border-purple-500/20 bg-black/30 p-6">
           <Text className="my-4 self-center text-2xl text-white">
             Welcome Back 👋
           </Text>

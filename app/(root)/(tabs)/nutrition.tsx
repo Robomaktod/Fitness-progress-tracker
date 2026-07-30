@@ -1,8 +1,7 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { format, addDays, subDays, isValid as isValidDate } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import {
   FlatList,
   View,
@@ -14,7 +13,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAllFood } from "@/api/useFoodQueries";
 import { useAllNutritionLogs } from "@/api/useNutritionQueries";
 import AddFoodModal from "@/app/(root)/add-food";
 import CustomButton from "@/components/shared/CustomButton";
@@ -33,9 +31,50 @@ const screenBackgroundGradient: readonly [string, string, string] = [
   "#3B0764",
 ];
 
-const NutritionLogScreen: React.FC = () => {
-  const router = useRouter();
+const MEAL_NAMES: MealName[] = ["Breakfast", "Lunch", "Dinner", "Snack"];
 
+const mealMeta: Record<
+  string,
+  Pick<
+    FoodLogMealSectionData,
+    "iconName" | "iconProvider" | "iconColorClassName" | "borderColorClassName"
+  >
+> = {
+  Breakfast: {
+    iconName: "egg",
+    iconProvider: "FontAwesome5",
+    iconColorClassName: "text-cyan-400",
+    borderColorClassName: "border-cyan-500/30",
+  },
+  Lunch: {
+    iconName: "hamburger",
+    iconProvider: "FontAwesome5",
+    iconColorClassName: "text-violet-300",
+    borderColorClassName: "border-violet-500/30",
+  },
+  Dinner: {
+    iconName: "utensils",
+    iconProvider: "FontAwesome5",
+    iconColorClassName: "text-blue-300",
+    borderColorClassName: "border-blue-500/30",
+  },
+  Snack: {
+    iconName: "cookie",
+    iconProvider: "FontAwesome5",
+    iconColorClassName: "text-fuchsia-300",
+    borderColorClassName: "border-fuchsia-500/30",
+  },
+};
+
+const formatMacro = (
+  value: string | number | null | undefined,
+  quantity: number,
+) => {
+  const perHundredGrams = Number(value) || 0;
+  return `${((perHundredGrams * quantity) / 100).toFixed(1)}g`;
+};
+
+const NutritionLogScreen: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [mealToAddTo, setMealToAddTo] = useState<MealName | null>(null);
@@ -59,18 +98,9 @@ const NutritionLogScreen: React.FC = () => {
     if (isValidDate(newDate)) setCurrentDate(newDate);
   };
 
-  const {
-    data: allFoods = [],
-    isLoading: isLoadingFoodLog,
-    isError: fetchFoodLogError,
-    refetch: refetchFoodLog,
-    isRefetching: isRefetchingFoodLog,
-    error: fetchFoodLogErrorMessage,
-  } = useAllFood();
-
   const { userId } = useAuth();
   const {
-    data: allLogs,
+    data: allLogs = [],
     isLoading: isLoadingLogs,
     isError: fetchLogsError,
     refetch: refetchLogs,
@@ -78,45 +108,53 @@ const NutritionLogScreen: React.FC = () => {
     error: fetchLogsErrorMessage,
   } = useAllNutritionLogs(userId ?? "", currentDate);
 
-  useEffect(() => {
-    refetchLogs();
-  }, [currentDate]);
+  const mealSections: FoodLogMealSectionData[] = useMemo(
+    () =>
+      MEAL_NAMES.map((mealName) => {
+        const logsForMeal = Array.isArray(allLogs)
+          ? allLogs.filter((log: any) => log.mealType === mealName)
+          : [];
+        const meta = mealMeta[mealName] ?? mealMeta.Snack;
+        const totalCalories = logsForMeal.reduce((sum: number, log: any) => {
+          const calories = Number(log.food?.calories) || 0;
+          const quantity = Number(log.quantityConsumed) || 0;
+          return sum + (calories * quantity) / 100;
+        }, 0);
+        const foodItems: FoodLogItemData[] = logsForMeal.map((log: any) => {
+          const quantity = Number(log.quantityConsumed) || 0;
+          const calories = Number(log.food?.calories) || 0;
 
-  const mealNames: MealName[] = ["Breakfast", "Lunch", "Dinner", "Snack"];
-  const mealSections: FoodLogMealSectionData[] = mealNames.map((mealName) => {
-    const foodItems = allFoods.filter(
-      (item: any) => item.mealName === mealName,
-    );
-    const totalCalories = foodItems.reduce((sum: number, item: any) => {
-      const cal = parseInt(item.calories);
-      return sum + (isNaN(cal) ? 0 : cal);
-    }, 0);
-    // Use a valid FontAwesome5 icon name as fallback
-    const fallbackIcon =
-      mealName === "Breakfast"
-        ? "egg"
-        : mealName === "Lunch"
-          ? "hamburger"
-          : mealName === "Dinner"
-            ? "utensils"
-            : "cookie";
-    return {
-      mealName,
-      totalCalories: totalCalories ? `${totalCalories} cal` : "0 cal",
-      iconName: foodItems[0]?.iconName || fallbackIcon,
-      iconProvider: foodItems[0]?.iconProvider || "FontAwesome5",
-      iconColorClassName: foodItems[0]?.iconColorClassName || "text-cyan-400",
-      borderColorClassName:
-        foodItems[0]?.borderColorClassName || "border-cyan-500/30",
-      shadowColor: foodItems[0]?.shadowColor,
-      foodItems: foodItems.length ? foodItems : [],
-    };
-  });
+          return {
+            id: String(log.nutritionLogId),
+            name: log.food?.name || "Unknown food",
+            calories: `${Math.round((calories * quantity) / 100)} cal`,
+            macros: {
+              protein: formatMacro(log.food?.proteinG, quantity),
+              fat: formatMacro(log.food?.fatG, quantity),
+              carbs: formatMacro(log.food?.carbsG, quantity),
+            },
+            iconProvider: "FontAwesome5",
+            iconName: "utensils",
+            iconColorClassName: meta.iconColorClassName,
+            iconBgClassName: "bg-dark-200",
+          };
+        });
 
-  const handleSaveFood = (food: any) => {
+        return {
+          mealName,
+          totalCalories: `${Math.round(totalCalories)} cal`,
+          shadowColor: undefined,
+          foodItems,
+          ...meta,
+        };
+      }),
+    [allLogs],
+  );
+
+  const handleSaveFood = () => {
     setIsAddFoodModalVisible(false);
     setMealToAddTo(null);
-    refetchFoodLog();
+    refetchLogs();
   };
 
   return (
@@ -134,21 +172,20 @@ const NutritionLogScreen: React.FC = () => {
           onNextDate={() => handleDateChange(addDays(currentDate, 1))}
           onDateChange={handleDateChange}
         />
-        {isLoadingFoodLog ? (
+        {isLoadingLogs ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color="#FFFFFF" />
             <Text className="mt-2 text-gray-300">Loading food log...</Text>
           </View>
-        ) : fetchFoodLogError ? (
+        ) : fetchLogsError ? (
           <View className="flex-1 items-center justify-center px-4">
             <Text className="text-center text-lg text-red-400">
-              {typeof fetchFoodLogError === "string"
-                ? fetchFoodLogError
-                : "Failed to load food log."}
+              {(fetchLogsErrorMessage as Error)?.message ||
+                "Failed to load food log."}
             </Text>
             <CustomButton
               title="Retry"
-              onPress={() => refetchFoodLog()}
+              onPress={() => refetchLogs()}
               className="mt-4 w-1/2"
             />
           </View>
@@ -160,7 +197,6 @@ const NutritionLogScreen: React.FC = () => {
             renderItem={({ item }) => (
               <MealSectionCard
                 mealSection={item}
-                date={currentDate}
                 onAddFoodToMeal={handleAddFoodToMeal}
                 onFoodItemPress={handleFoodItemPress}
               />
@@ -169,8 +205,8 @@ const NutritionLogScreen: React.FC = () => {
             showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl
-                refreshing={isRefetchingFoodLog}
-                onRefresh={refetchFoodLog}
+                refreshing={isRefetchingLogs}
+                onRefresh={refetchLogs}
                 tintColor="#FFFFFF"
                 colors={["#FFFFFF"]}
               />

@@ -30,12 +30,17 @@ const CustomButton = ({
   className,
   gradientStyles,
   isGradientActive = true,
+  disabled,
   ...props
 }: ButtonProps) => {
+  const isDisabled = Boolean(disabled);
+
   const InnerButtonContent = () => (
     <>
       {IconLeft && <IconLeft />}
-      <Text className={`text-lg font-bold ${getTextVariantStyle(textVariant)}`}>
+      <Text
+        className={`text-center text-lg font-bold ${getTextVariantStyle(textVariant)}`}
+      >
         {title}
       </Text>
       {IconRight && <IconRight />}
@@ -44,12 +49,14 @@ const CustomButton = ({
   return (
     <Pressable
       onPress={onPress}
-      className={`flex w-full items-center justify-center overflow-hidden rounded-xl transition-all duration-300 ${className}`}
+      disabled={isDisabled}
+      accessibilityState={{ disabled: isDisabled }}
+      className={`flex w-full items-center justify-center overflow-hidden rounded-xl ${isDisabled ? "opacity-50" : ""} ${className ?? ""}`}
       {...props}
     >
       {isGradientActive ? (
         <LinearGradient
-          className={`flex w-full items-center justify-center px-4 py-3 ${gradientStyles}`}
+          className={`flex w-full items-center justify-center px-4 py-3 ${gradientStyles ?? ""}`}
           colors={gradients[bgVariant]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}

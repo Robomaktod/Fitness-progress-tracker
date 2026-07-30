@@ -10,6 +10,8 @@ import {
 
 import { ExerciseType } from "@/api/useActivityTypes";
 
+const todayInputValue = () => new Date().toISOString().slice(0, 10);
+
 interface AddExerciseModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -33,12 +35,20 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   const [exerciseTypeId, setExerciseTypeId] = useState("");
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
-  const [date, setDate] = useState<Date | null>(null);
+  const [date, setDate] = useState(todayInputValue());
   const [error, setError] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleSave = () => {
-    if (!exerciseTypeId || !sets || !reps || !date) {
+    const parsedDate = new Date(`${date}T00:00:00`);
+
+    if (
+      !exerciseTypeId ||
+      !sets ||
+      !reps ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+      Number.isNaN(parsedDate.getTime())
+    ) {
       setError("All fields are required.");
       return;
     }
@@ -47,12 +57,12 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
       exerciseTypeId,
       sets,
       reps,
-      date: date.toISOString().slice(0, 10),
+      date,
     });
     setExerciseTypeId("");
     setSets("");
     setReps("");
-    setDate(null);
+    setDate(todayInputValue());
   };
 
   return (
@@ -70,7 +80,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
           <View className="mb-2">
             <Text className="mb-1 text-white">Exercise Type</Text>
             <Pressable
-              className="rounded-lg bg-dark-100 px-4 py-2"
+              className="rounded-lg border border-purple-500/30 bg-dark-100 px-4 py-3"
               onPress={() => setShowDropdown(true)}
               disabled={isLoading || exerciseTypes.length === 0}
             >
@@ -133,7 +143,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
             onChangeText={setSets}
             placeholder="Sets"
             keyboardType="numeric"
-            className="mb-2 rounded-lg bg-dark-100 px-4 py-2 text-white"
+            className="mb-2 rounded-lg border border-purple-500/30 bg-dark-100 px-4 py-3 text-white"
             placeholderTextColor="#aaa"
           />
           <TextInput
@@ -141,22 +151,14 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
             onChangeText={setReps}
             placeholder="Reps per Set"
             keyboardType="numeric"
-            className="mb-2 rounded-lg bg-dark-100 px-4 py-2 text-white"
+            className="mb-2 rounded-lg border border-purple-500/30 bg-dark-100 px-4 py-3 text-white"
             placeholderTextColor="#aaa"
           />
           <TextInput
-            value={date ? date.toISOString().slice(0, 10) : ""}
-            onChangeText={(text) => {
-              // Accept only YYYY-MM-DD format, set as date if valid, else null
-              const isValid = /^\d{4}-\d{2}-\d{2}$/.test(text);
-              if (isValid) {
-                setDate(new Date(text + "T00:00:00"));
-              } else {
-                setDate(null);
-              }
-            }}
+            value={date}
+            onChangeText={setDate}
             placeholder="Date (YYYY-MM-DD)"
-            className="mb-2 rounded-lg bg-dark-100 px-4 py-2 text-white"
+            className="mb-2 rounded-lg border border-purple-500/30 bg-dark-100 px-4 py-3 text-white"
             placeholderTextColor="#aaa"
             keyboardType="default"
             autoCapitalize="none"

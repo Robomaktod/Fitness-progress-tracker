@@ -1,7 +1,6 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { format, subDays, startOfWeek, endOfWeek } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
 import React, { useState, useCallback } from "react";
 import {
   View,
@@ -38,7 +37,6 @@ const screenBackgroundGradient: readonly [string, string, string] = [
 ];
 
 const ActivityLogScreen: React.FC = () => {
-  const router = useRouter();
   const { userId } = useAuth();
 
   const [selectedFilter, setSelectedFilter] = useState<string>("Today");
@@ -249,7 +247,7 @@ const ActivityLogScreen: React.FC = () => {
             renderItem={renderActivityItem}
             keyExtractor={(item) => item.id}
             className="px-4"
-            contentContainerClassName="pb-20"
+            contentContainerClassName="pb-28"
             showsVerticalScrollIndicator={false}
             refreshControl={
               // Added for pull-to-refresh
@@ -262,16 +260,20 @@ const ActivityLogScreen: React.FC = () => {
             }
           />
         )}
-        <CustomButton
-          title="Add Activity"
-          onPress={() => setShowAddActivityModal(true)}
-          className="absolute bottom-24 left-4 right-4"
-        />
-        <CustomButton
-          title="Add Exercise"
-          onPress={() => setShowAddExerciseModal(true)}
-          className="absolute bottom-10 left-4 right-4"
-        />
+        <View className="absolute bottom-8 left-4 right-4 flex-row gap-3">
+          <CustomButton
+            title="Add Activity"
+            onPress={() => setShowAddActivityModal(true)}
+            className="flex-1"
+            disabled={isCreating}
+          />
+          <CustomButton
+            title="Add Exercise"
+            onPress={() => setShowAddExerciseModal(true)}
+            className="flex-1"
+            disabled={isCreating}
+          />
+        </View>
         <AddActivityModal
           isVisible={showAddActivityModal}
           onClose={() => setShowAddActivityModal(false)}

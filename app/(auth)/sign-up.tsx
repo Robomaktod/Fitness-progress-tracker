@@ -252,7 +252,7 @@ const SignUp = () => {
           <Image source={images.mainIcon} className="mb-2 size-20" />
           <GradientText>NeonPulse Fit</GradientText>
         </View>
-        <View className="mx-8 flex-1 rounded-xl border border-purple-500/20 bg-black/30 p-10 backdrop-blur-sm">
+        <View className="mx-6 flex-1 rounded-xl border border-purple-500/20 bg-black/30 p-6">
           <Text className="my-4 self-center text-2xl text-white">
             Create Account
           </Text>
@@ -355,7 +355,7 @@ const SignUp = () => {
               label="Verification Code"
               labelStyle="text-white mt-6 text-center"
               inputStyle="text-white text-center text-2xl tracking-[10px] font-semibold"
-              containerStyle="border-2 border-b-2 border-[#D0D4DA] focus:border-indigo-400 my-3"
+              containerStyle="my-3 border-2 border-[#D0D4DA]"
               keyboardType="number-pad"
               maxLength={6}
               value={verification.code}

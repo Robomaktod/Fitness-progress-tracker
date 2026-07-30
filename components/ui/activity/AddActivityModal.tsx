@@ -10,6 +10,8 @@ import {
 
 import { ActivityCategory } from "@/api/useActivityTypes";
 
+const todayInputValue = () => new Date().toISOString().slice(0, 10);
+
 interface AddActivityModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -31,7 +33,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({
 }) => {
   const [categoryId, setCategoryId] = useState("");
   const [duration, setDuration] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(todayInputValue());
   const [error, setError] = useState("");
   const [showCategoryModal, setShowCategoryModal] = useState(false);
 
@@ -44,7 +46,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({
     onSave({ categoryId, duration, date });
     setCategoryId("");
     setDuration("");
-    setDate("");
+    setDate(todayInputValue());
   };
 
   return (
@@ -67,7 +69,7 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({
                 categories.length > 0 &&
                 setShowCategoryModal(true)
               }
-              className="mb-2 rounded-lg bg-dark-100 px-4 py-2"
+              className="mb-2 rounded-lg border border-purple-500/30 bg-dark-100 px-4 py-3"
               disabled={isLoading || categories.length === 0}
             >
               <Text className={categoryId ? "text-white" : "text-gray-400"}>
@@ -134,15 +136,16 @@ const AddActivityModal: React.FC<AddActivityModalProps> = ({
             onChangeText={setDuration}
             placeholder="Duration (min)"
             keyboardType="numeric"
-            className="mb-2 rounded-lg bg-dark-100 px-4 py-2 text-white"
+            className="mb-2 rounded-lg border border-purple-500/30 bg-dark-100 px-4 py-3 text-white"
             placeholderTextColor="#aaa"
           />
           <TextInput
             value={date}
             onChangeText={setDate}
             placeholder="Date (YYYY-MM-DD)"
-            className="mb-2 rounded-lg bg-dark-100 px-4 py-2 text-white"
+            className="mb-2 rounded-lg border border-purple-500/30 bg-dark-100 px-4 py-3 text-white"
             placeholderTextColor="#aaa"
+            maxLength={10}
           />
           {error ? (
             <Text className="mb-2 text-center text-red-400">{error}</Text>

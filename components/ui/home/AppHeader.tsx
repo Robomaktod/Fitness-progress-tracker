@@ -1,18 +1,21 @@
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
-import { View, TouchableOpacity, Image } from "react-native";
+import { View, TouchableOpacity, Image, Alert } from "react-native";
 
 import GradientText from "@/components/shared/GradientText";
 
 const userAvatar = require("@/assets/images/icon.png");
 
 const AppHeader: React.FC = () => {
+  const router = useRouter();
+
   const handleNotificationPress = () => {
-    console.log("Notification pressed");
+    Alert.alert("Notifications", "Notifications are not available yet.");
   };
 
   const handleProfilePress = () => {
-    console.log("Profile pressed");
+    router.push("/(root)/(tabs)/profile");
   };
 
   return (
@@ -20,16 +23,15 @@ const AppHeader: React.FC = () => {
       <View className="flex-row items-center space-x-2">
         <FontAwesome5 name="heartbeat" size={22} className="text-purple-500" />
         <GradientText
-          bgVariant="default" // Choose a suitable gradient from your constants
+          bgVariant="default"
           className="text-lg font-bold"
           accessible
-          accessibilityLabel="HealthTracker app title"
+          accessibilityLabel="NeonPulse Fit app title"
         >
-          HealthTracker
+          NeonPulse Fit
         </GradientText>
       </View>
 
-      {/* Action Icons */}
       <View className="flex-row items-center space-x-3">
         <TouchableOpacity
           onPress={handleNotificationPress}
@@ -48,10 +50,10 @@ const AppHeader: React.FC = () => {
         >
           <View className="h-8 w-8 overflow-hidden rounded-full border-2 border-purple-500">
             <Image
-              source={userAvatar} // Update path if needed
+              source={userAvatar}
               className="h-full w-full"
               resizeMode="cover"
-              accessibilityLabel="User profile picture" // More specific label if user name is available
+              accessibilityLabel="User profile picture"
               accessible={true}
             />
           </View>

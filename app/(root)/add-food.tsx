@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { View, Text, ScrollView, Alert, Pressable } from "react-native";
 import Modal from "react-native-modal";
 
-import { useFoodByName } from "@/api/useFoodQueries";
+import { useAddFood, useFoodByName } from "@/api/useFoodQueries";
 import { useCreateNutritionLog } from "@/api/useNutritionQueries";
 import CustomButton from "@/components/shared/CustomButton";
 import Divider from "@/components/shared/Divider";
@@ -63,22 +63,19 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
     data: searchResultsRaw,
     isLoading: isSearching,
     isError: searchError,
-    refetch: refetchSearch,
   } = useFoodByName(searchTerm);
 
+  const addFoodMutation = useAddFood();
   const addNutritionMutation = useCreateNutritionLog();
+  const isSaving =
+    addFoodMutation.status === "pending" ||
+    addNutritionMutation.status === "pending";
 
   const searchResults = Array.isArray(searchResultsRaw)
     ? searchResultsRaw.filter(Boolean)
     : searchResultsRaw && typeof searchResultsRaw === "object"
       ? Object.values(searchResultsRaw).filter(Boolean)
       : [];
-
-  React.useEffect(() => {
-    if (searchTerm && searchTouched) {
-      refetchSearch();
-    }
-  }, [searchTerm]);
 
   React.useEffect(() => {
     if (targetMealName) {
@@ -92,24 +89,9 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
     return w && v ? ((v * w) / 100).toFixed(1) : "";
   };
 
-  const handleSave = () => {
-    if (!foodData.foodName || !foodData.calories || !selectedMealTime) {
-      Alert.alert(
-        "Missing Fields",
-        "Please fill in food name, calories, and select a meal time.",
-      );
-      return;
-    }
-    onSaveFood({
-      foodName: foodData.foodName,
-      calories: foodData.calories,
-      servingSize: foodData.servingSize,
-      protein: foodData.protein,
-      carbs: foodData.carbs,
-      fat: foodData.fat,
-      mealTime: selectedMealTime,
-    });
+  const resetForm = () => {
     setFoodData({
+      foodId: "",
       foodName: "",
       calories: "",
       servingSize: "",
@@ -117,6 +99,72 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
       carbs: "",
       fat: "",
     });
+    setWeight("100");
+    setSearchTerm("");
+    setSearchTouched(false);
+  };
+
+  const handleSave = async () => {
+    if (!userId) {
+      Alert.alert("Not Signed In", "Please sign in before logging food.");
+      return;
+    }
+
+    if (!foodData.foodName || !foodData.calories || !selectedMealTime) {
+      Alert.alert(
+        "Missing Fields",
+        "Please fill in food name, calories, and select a meal time.",
+      );
+      return;
+    }
+
+    const quantityConsumed = Number(weight);
+
+    if (!Number.isFinite(quantityConsumed) || quantityConsumed <= 0) {
+      Alert.alert("Invalid Weight", "Please enter a valid weight in grams.");
+      return;
+    }
+
+    try {
+      const savedFood = foodData.foodId
+        ? foodData
+        : await addFoodMutation.mutateAsync({
+            userId,
+            name: foodData.foodName,
+            calories: foodData.calories,
+            proteinG: foodData.protein || 0,
+            carbsG: foodData.carbs || 0,
+            fatG: foodData.fat || 0,
+          });
+
+      const foodId = savedFood.foodId || savedFood.id;
+
+      if (!foodId) {
+        throw new Error("Food was saved without an id.");
+      }
+
+      await addNutritionMutation.mutateAsync({
+        userId,
+        foodId,
+        quantityConsumed,
+        mealType: selectedMealTime,
+        loggedAt: new Date().toISOString(),
+      });
+
+      onSaveFood({
+        foodName: foodData.foodName,
+        calories: foodData.calories,
+        servingSize: foodData.servingSize,
+        protein: foodData.protein,
+        carbs: foodData.carbs,
+        fat: foodData.fat,
+        mealTime: selectedMealTime,
+      });
+      resetForm();
+      onClose();
+    } catch (err: any) {
+      Alert.alert("Add Food Failed", err.message || "Could not log food.");
+    }
   };
 
   return (
@@ -164,7 +212,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                     borderRadius: 12,
                     borderWidth: 1,
                     borderColor: "#a78bfa",
-                    maxHeight: 540,
+                    maxHeight: 280,
                     overflow: "scroll",
                     shadowColor: "#000",
                     shadowOffset: { width: 0, height: 2 },
@@ -194,7 +242,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                           setFoodData((prev: any) => ({
                             ...prev,
                             foodId: item.foodId || item.id,
-                            foodName: item.product_name || "",
+                            foodName: item.product_name || "Unnamed food",
                             calories: calcByWeight(item.energy_kcal_100g),
                             protein: calcByWeight(item.proteins_100g),
                             carbs: calcByWeight(item.carbohydrates_100g),
@@ -264,7 +312,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
             <Text className="text-base font-medium text-gray-300">
               Macronutrients
             </Text>
-            <View className="mb-4 flex-row justify-between space-x-3 *:mx-4 *:bg-slate-50">
+            <View className="mb-4 flex-row justify-between gap-2">
               <View className="mx-1 flex-1">
                 <InputField
                   value={foodData.protein}
@@ -313,47 +361,9 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
             />
 
             <CustomButton
-              title={
-                addNutritionMutation.status === "pending"
-                  ? "Adding..."
-                  : "Add Food Entry"
-              }
-              onPress={() => {
-                if (
-                  !foodData.foodName ||
-                  !foodData.calories ||
-                  !selectedMealTime
-                ) {
-                  Alert.alert(
-                    "Missing Fields",
-                    "Please fill in food name, calories, and select a meal time.",
-                  );
-                  return;
-                }
-                addNutritionMutation.mutate(
-                  {
-                    userId: userId,
-                    foodId: foodData.foodId,
-                    quantityConsumed: parseFloat(weight),
-                    mealType: selectedMealTime,
-                    loggedAt: new Date().toISOString(),
-                  },
-                  {
-                    onSuccess: () => {
-                      setFoodData({
-                        foodName: "",
-                        calories: "",
-                        servingSize: "",
-                        protein: "",
-                        carbs: "",
-                        fat: "",
-                      });
-                      setWeight("100");
-                      onClose();
-                    },
-                  },
-                );
-              }}
+              title={isSaving ? "Adding..." : "Add Food Entry"}
+              onPress={handleSave}
+              disabled={isSaving}
               bgVariant="default"
               className="mb-28 mt-8"
             />

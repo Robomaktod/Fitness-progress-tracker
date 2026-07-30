@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "./apiClient";
 
 interface NewFoodEntry {
+  foodId?: string;
+  userId?: string | null | undefined;
   name: string;
   calories: number | string;
   proteinG?: number | string;

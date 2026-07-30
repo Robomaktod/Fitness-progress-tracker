@@ -23,7 +23,7 @@ const OAuth = () => {
 
   return (
     <CustomButton
-      className="flex flex-row items-center justify-center rounded-lg border border-purple-500/50 bg-transparent px-4 py-3 font-medium text-white transition-all duration-300 hover:border-purple-500"
+      className="flex flex-row items-center justify-center rounded-lg border border-purple-500/50 bg-transparent px-4 py-3 font-medium text-white"
       title="Continue with Google"
       isGradientActive={false}
       IconLeft={() => (
